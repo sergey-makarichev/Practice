@@ -1,0 +1,4 @@
+﻿  main.cpp
+d:\программы\прог\project\project2\main.cpp(15): warning C4244: аргумент: преобразование "int" в "float", возможна потеря данных
+d:\программы\прог\project\project2\main.cpp(47): warning C4244: инициализация: преобразование "int" в "float", возможна потеря данных
+  Project2.vcxproj -> D:\программы\прог\Project\Debug\Project2.exe

@@ -1,0 +1,15 @@
+﻿  main.cpp
+d:\программы\программирование 2-ой курс\project\project3\tvector.h(37): error C2039: setw: не является членом "std"
+  d:\программы\visual studio\vc\tools\msvc\14.16.27023\include\ctime(17): note:  см. объявление "std"
+  d:\программы\программирование 2-ой курс\project\project3\tvector.h(35): note: при компиляции функции-члена "<Нет данных>" класса класс <Нет данных>
+  d:\программы\программирование 2-ой курс\project\project3\main.cpp(12): note: выполняется компиляция ссылки на экземпляр шаблон класс "TVector<float>"
+d:\программы\программирование 2-ой курс\project\project3\tvector.h(37): error C3861: setw: идентификатор не найден
+d:\программы\программирование 2-ой курс\project\project3\tvector.h(37): error C2039: setprecision: не является членом "std"
+  d:\программы\visual studio\vc\tools\msvc\14.16.27023\include\ctime(17): note:  см. объявление "std"
+d:\программы\программирование 2-ой курс\project\project3\tvector.h(37): error C3861: setprecision: идентификатор не найден
+d:\программы\программирование 2-ой курс\project\project3\tvector.h(39): error C2039: setw: не является членом "std"
+  d:\программы\visual studio\vc\tools\msvc\14.16.27023\include\ctime(17): note:  см. объявление "std"
+d:\программы\программирование 2-ой курс\project\project3\tvector.h(39): error C3861: setw: идентификатор не найден
+d:\программы\программирование 2-ой курс\project\project3\tvector.h(39): error C2039: setprecision: не является членом "std"
+  d:\программы\visual studio\vc\tools\msvc\14.16.27023\include\ctime(17): note:  см. объявление "std"
+d:\программы\программирование 2-ой курс\project\project3\tvector.h(39): error C3861: setprecision: идентификатор не найден
