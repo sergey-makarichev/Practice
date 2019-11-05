@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+using namespace std;
 
 template <class ValueType>
 class TStack
@@ -11,12 +12,12 @@ private:
 public:
 	TStack(int size);
 	TStack(const TStack &s);
-	~TStack();
+	~TStack(); 
 	bool IsEmpty()const;
 	bool IsFull()const;
 	void Push(ValueType e);
 	ValueType Pop();
-	void Postfix(string v);
+	string Postfix(string v);
 };
 
 template <class ValueType>
@@ -34,6 +35,12 @@ TStack<ValueType> ::TStack(const TStack<ValueType> &s)
 	this - top = s.top;
 	for (int i = 0; i < top; i++)
 		elems[i] = s.elems[i];
+}
+
+template<typename ValueType>
+TStack<ValueType>::~TStack()
+{
+	delete[] elems;
 }
 
 template <class ValueType>
@@ -65,10 +72,15 @@ ValueType TStack<ValueType>::Pop()
 }
 
 template <class ValueType>
-void TStack<ValueType> ::Postfix(string v)
+string TStack<ValueType> ::Postfix(string v)
 {
-	while (!'\0')
+	TStack<char> s1(20);
+	TStack<char> s2(20);
+	int i = 0;
+	while(v[i] != '\0')
 	{
-
+		if (v[i] >= 65 && v[i] <= 90)
+			s1.Push(v[i]);
+		else if(v[i] )
 	}
 }
