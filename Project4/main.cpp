@@ -1,6 +1,5 @@
-#include <string>
 #include <iostream>
-using namespace std;
+#include "TStack.h"
 
 int main()
 {
@@ -10,6 +9,7 @@ int main()
 	{
 		cout << v[i];
 	}*/
+	TStack<char> :: Postfix(v);
 	cout << v;
 	system("pause");
 

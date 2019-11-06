@@ -7,7 +7,7 @@ class TStack
 {
 private:
 	int size;
-	ValueType* = elems;
+	ValueType* elems;
 	int top;
 public:
 	TStack(int size);
@@ -17,7 +17,8 @@ public:
 	bool IsFull()const;
 	void Push(ValueType e);
 	ValueType Pop();
-	string Postfix(string v);
+	ValueType Top();
+	static string Postfix(string v);
 };
 
 template <class ValueType>
@@ -72,15 +73,72 @@ ValueType TStack<ValueType>::Pop()
 }
 
 template <class ValueType>
+ValueType TStack<ValueType>::Top()
+{
+	if (IsEmpty())
+		throw "Error";
+	return (elems[top]);
+}
+
+template <class ValueType>
 string TStack<ValueType> ::Postfix(string v)
 {
 	TStack<char> s1(20);
 	TStack<char> s2(20);
 	int i = 0;
-	while(v[i] != '\0')
+	while(v[i++] != '\0')
 	{
 		if (v[i] >= 65 && v[i] <= 90)
-			s1.Push(v[i]);
-		else if(v[i] )
+		{
+			if (v[i - 1] >= 65 && v[i - 1] <= 90)
+				throw "Error";
+				s1.Push(v[i]);
+		}
+		else if (v[i] >= 42 && v[i] <= 47 && v[i] != 44)
+		{
+			if (v[i] == '*')
+				v[i] = '.';
+			if (v[i] == '+')
+				v[i] = ',';
+			if (s2.IsEmpty())
+				s2.Push(v[i]);
+			else
+			{
+				if (v[i] <= s2.Top() || v[i] - 1 == s2.Top() || v[i] + 1 == s2.Top())
+				{
+					while (v[i] <= s2.Top() || v[i] - 1 == s2.Top() || v[i] + 1 == s2.Top())
+					{
+						s1.Push(s2.Pop());
+						//s2.Pop();
+					}
+					s2.Push(v[i]);
+				}
+				else
+				{
+					s2.Push(v[i]);
+				}
+
+			}
+		}
+		else if (v[i] == '(')
+			s2.Push(v[i]);
+		else if (v[i] == ')')
+		{
+			while (s2.Top() != '(')
+				s1.Push(s2.Pop());
+			s2.Pop();
+		}
+		else if (v[i] == ' ')
+			continue;
+		else
+			throw "Error";
 	}
+	while (s2.top != -1)
+		s1.Push(s2.Pop());
+	while (s1.top != -1)
+	{
+		v[i = 0] = s1.Top();
+		s1.top--;
+	}
+	return v;
 }
