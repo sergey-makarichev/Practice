@@ -1,16 +1,50 @@
 #include <iostream>
 #include "TStack.h"
+#include "Postfix.h"
 
 int main()
 {
-	string v;
-	cin >> v;
-	/*for (int i = 0; i < 6; i++)
+	string str;
+	string name;
+	std::getline(std::cin, str);
+	try
 	{
-		cout << v[i];
-	}*/
-	TStack<char> :: Postfix(v);
-	cout << v;
+		str = Postfix::PostfixForm(str);
+	}
+	catch (M_Exeption &exception)
+	{
+		cout << " Error: "<< exception.what() << endl;
+		system("pause");
+		return 0;
+	}
+	cout << str << endl;
+	for (int i = 0; i < str.length(); i++)
+	{
+		if ((str[i] >= 65) && (str[i] <= 90))
+		{
+				if (name.find(str[i]) != -1)
+					continue;
+				name = name + str[i];
+		}
+	}
+	//string name = Postfix::VariableName(str);
+	float* value = new float[name.length()];
+	for (int i = 0; i < name.length(); i++)
+	{
+		cout << "enter the value of " << name[i] <<": " << endl;
+		cin >> value[i];
+	}
+	float k = 0;
+	try
+	{
+		k = Postfix::Calculating(str, name, value);
+	}
+	catch (M_Exeption &exception)
+	{
+		cout << " Error: " << exception.what() << endl;
+		system("pause");
+		return 0;
+	}
+	cout << str << "  =" << k << endl;
 	system("pause");
-
 }

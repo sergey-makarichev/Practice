@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include "Exeption.h"
 using namespace std;
 
 template <class ValueType>
@@ -16,10 +17,20 @@ public:
 	bool IsEmpty()const;
 	bool IsFull()const;
 	void Push(ValueType e);
+	int Get_top();
+	ValueType GetElem(int index);
 	ValueType Pop();
 	ValueType Top();
-	static string Postfix(string v);
 };
+
+template <class ValueType>
+ValueType TStack<ValueType>::GetElem(int index)
+{
+	if ((index < 0) || (index > this->top))
+		throw M_Exeption("Invalid index");
+	return(this->elems[index]);
+}
+
 
 template <class ValueType>
 TStack<ValueType>::TStack(int size)
@@ -33,9 +44,9 @@ template <class ValueType>
 TStack<ValueType> ::TStack(const TStack<ValueType> &s)
 {
 	this->size = s.size;
-	this - top = s.top;
+	this->top = s.top;
 	for (int i = 0; i < top; i++)
-		elems[i] = s.elems[i];
+		this->elems[i] = s.elems[i];
 }
 
 template<typename ValueType>
@@ -60,7 +71,7 @@ template <class ValueType>
 void TStack<ValueType> ::Push(ValueType e)
 {
 	if (IsFull())
-		throw "Error";
+		throw M_Exeption("Stack is full");
 	elems[++top] = e;
 }
 
@@ -68,48 +79,75 @@ template <class ValueType>
 ValueType TStack<ValueType>::Pop()
 {
 	if (IsEmpty())
-		throw "Error";
+		throw M_Exeption("Stack is empty");
 	return(elems[top--]);
+}
+
+template <class ValueType>
+int TStack<ValueType>::Get_top()
+{
+	return(this->top);
 }
 
 template <class ValueType>
 ValueType TStack<ValueType>::Top()
 {
-	if (IsEmpty())
-		throw "Error";
+	/*if (IsEmpty())
+		throw "Error";*/
 	return (elems[top]);
 }
 
-template <class ValueType>
+/*int Prioritet(char v)
+{
+	{
+		switch (v)
+		{
+		case '*':
+			return 3;
+			break;
+		case '/':
+			return 3;
+			break;
+		case '+':
+			return 2;
+			break;
+		case '-':
+			return 2;
+			break;
+		case '(':
+			return 1;
+			break;
+		}
+	}
+}
+
+/*template <class ValueType>
 string TStack<ValueType> ::Postfix(string v)
 {
-	TStack<char> s1(20);
-	TStack<char> s2(20);
-	int i = 0;
-	while(v[i++] != '\0')
+	TStack<char> s1(v.length());
+	TStack<char> s2(v.length());
+	for (int i = 0; i < v.length(); i++)
 	{
-		if (v[i] >= 65 && v[i] <= 90)
+		if ((v[i] >= 65) && (v[i] <= 90))
 		{
-			if (v[i - 1] >= 65 && v[i - 1] <= 90)
-				throw "Error";
-				s1.Push(v[i]);
+			if (i > 0)
+			{
+				if ((v[i - 1] >= 65) && (v[i - 1] <= 90) && (i - 1))
+					throw "Error";
+			}
+			s1.Push(v[i]);
 		}
-		else if (v[i] >= 42 && v[i] <= 47 && v[i] != 44)
+		else if ((v[i] == 42) || (v[i] == 43) || (v[i] == 45) || (v[i] == 47))
 		{
-			if (v[i] == '*')
-				v[i] = '.';
-			if (v[i] == '+')
-				v[i] = ',';
 			if (s2.IsEmpty())
 				s2.Push(v[i]);
 			else
 			{
-				if (v[i] <= s2.Top() || v[i] - 1 == s2.Top() || v[i] + 1 == s2.Top())
+				if (Prioritet(v[i]) <= Prioritet(s2.Top()))
 				{
-					while (v[i] <= s2.Top() || v[i] - 1 == s2.Top() || v[i] + 1 == s2.Top())
+					while ((Prioritet(v[i]) <= Prioritet(s2.Top())) && (!s2.IsEmpty()))
 					{
 						s1.Push(s2.Pop());
-						//s2.Pop();
 					}
 					s2.Push(v[i]);
 				}
@@ -125,7 +163,11 @@ string TStack<ValueType> ::Postfix(string v)
 		else if (v[i] == ')')
 		{
 			while (s2.Top() != '(')
+			{
+				if(s2.top == -1)
+					throw "Error";
 				s1.Push(s2.Pop());
+			}
 			s2.Pop();
 		}
 		else if (v[i] == ' ')
@@ -135,10 +177,57 @@ string TStack<ValueType> ::Postfix(string v)
 	}
 	while (s2.top != -1)
 		s1.Push(s2.Pop());
-	while (s1.top != -1)
+	string q;
+	for (int i = 0; i < s1.top + 1; i++)
 	{
-		v[i = 0] = s1.Top();
-		s1.top--;
+		if (s1.elems[i] == '(')
+			throw "Error";
+		q = q + s1.elems[i];
 	}
-	return v;
+	return q;
 }
+
+template <class ValueType>
+float TStack<ValueType>::Calculating(string v, string name, float* values)
+{
+	TStack<float> s(v.length());
+	float a, b;
+	for (int i = 0; i < v.length(); i++)
+	{
+		if ((v[i] >= 65) && (v[i] <= 90))
+		{
+			for (int k = 0; k < v.length(); k++)
+			{
+				if (v[i] == name[k])
+				{
+					s.Push(values[k]);
+					break;
+				}
+			}
+		}
+		else if ((v[i] == 42) || (v[i] == 43) || (v[i] == 45) || (v[i] == 47))
+		{
+			a = s.Pop();
+			b = s.Pop();
+			switch (v[i])
+			{
+			case '*':
+				s.Push(b * a);
+				break;
+			case '/':
+				if (a == 0)
+					throw "Error";
+				s.Push(b / a);
+				break;
+			case '+':
+				s.Push(b + a);
+				break;
+			case '-':
+				s.Push(b - a);
+				break;
+			}
+		}
+
+	}
+	return s.Top();
+}*/
