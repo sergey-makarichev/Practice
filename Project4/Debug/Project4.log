@@ -1,4 +1,11 @@
-﻿  main.cpp
+﻿  Postfix.cpp
+d:\программы\си ++ гитхаб\practice\project4\postfix.cpp(9): warning C4018: <: несоответствие типов со знаком и без знака
+d:\программы\си ++ гитхаб\practice\project4\postfix.cpp(74): warning C4018: <: несоответствие типов со знаком и без знака
+d:\программы\си ++ гитхаб\practice\project4\postfix.cpp(78): warning C4018: <: несоответствие типов со знаком и без знака
+  main.cpp
 d:\программы\си ++ гитхаб\practice\project4\main.cpp(21): warning C4018: <: несоответствие типов со знаком и без знака
-d:\программы\си ++ гитхаб\practice\project4\main.cpp(32): warning C4018: <: несоответствие типов со знаком и без знака
+d:\программы\си ++ гитхаб\practice\project4\main.cpp(31): warning C4018: <: несоответствие типов со знаком и без знака
+  Создание кода...
+d:\программы\си ++ гитхаб\practice\project4\postfix.cpp(138): warning C4715: Postfix::Prioritet: значение возвращается не при всех путях выполнения
+  LINK : эх эрщфхэ шыш эх т√яюыэхэр ёсюЁър D:\яЁюуЁрьь√\ёш ++ ушЄїрс\Practice\Debug\Project4.exe яЁш яюёыхфэхщ шэъЁхьхэЄэющ ъюьяюэютъх; т√яюыэ хЄё  яюыэр  ъюьяюэютър
   Project4.vcxproj -> D:\программы\си ++ гитхаб\Practice\Debug\Project4.exe

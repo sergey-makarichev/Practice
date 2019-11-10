@@ -111,21 +111,6 @@ float Postfix::Calculating(string v, string name, float* values)
 	return (s.GetElem(s.Get_top()));
 }
 
-string Postfix::VariableName(string v)
-{
-	string name;
-	for (int i = 0; i < v.length(); i++)
-	{
-		if ((v[i] >= 65) && (v[i] <= 90))
-		{
-			if (v.find(v[i]) != -1)
-				continue;
-			name = name + v[i];
-		}
-	}
-	return name;
-}
-
 int Postfix::Prioritet(char v)
 {
 	{

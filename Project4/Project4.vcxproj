@@ -115,7 +115,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Exeption.h" />
+    <ClInclude Include="Exсeption.h" />
     <ClInclude Include="Postfix.h" />
     <ClInclude Include="TStack.h" />
   </ItemGroup>

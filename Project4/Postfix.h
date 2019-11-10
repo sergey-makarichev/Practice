@@ -1,7 +1,7 @@
 #pragma once
 #include "TStack.h"
 #include <string>
-#include "Exeption.h"
+#include "Exñeption.h"
 using namespace std;
 
 class Postfix
@@ -11,5 +11,4 @@ private:
 public:
 	static string PostfixForm(string v);
 	static float Calculating(string v, string name, float* values);
-	static string VariableName(string v);
 };

@@ -21,7 +21,7 @@
     <ClInclude Include="Postfix.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="Exeption.h">
+    <ClInclude Include="Exсeption.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>

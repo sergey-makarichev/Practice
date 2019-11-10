@@ -27,7 +27,6 @@ int main()
 				name = name + str[i];
 		}
 	}
-	//string name = Postfix::VariableName(str);
 	float* value = new float[name.length()];
 	for (int i = 0; i < name.length(); i++)
 	{
