@@ -23,9 +23,9 @@ string Postfix::PostfixForm(string v)
 					s2.Push(v[i]);
 				else
 				{
-					if (Prioritet(v[i]) <= Prioritet(s2.GetElem(s2.Get_top())))
+					if (Prioritet(v[i]) <= Prioritet(s2.Top()))
 					{
-						while ((Prioritet(v[i]) <= Prioritet(s2.GetElem(s2.Get_top()))) && (!s2.IsEmpty()))
+						while ((Prioritet(v[i]) <= Prioritet(s2.Top())) && (!s2.IsEmpty()))
 						{
 							s1.Push(s2.Pop());
 						}
@@ -42,10 +42,10 @@ string Postfix::PostfixForm(string v)
 				s2.Push(v[i]);
 			else if (v[i] == ')')
 			{
-				while ((s2.GetElem(s2.Get_top())) != '(')
+				while ((s2.Top()) != '(')
 				{
 					if (s2.Get_top() == -1)
-						throw M_Exeption("a closing bracket is not found");
+						throw M_Exeption("an opening bracket is not found");
 					s1.Push(s2.Pop());
 				}
 				s2.Pop();
@@ -61,7 +61,7 @@ string Postfix::PostfixForm(string v)
 		for (int i = 0; i < s1.Get_top() + 1; i++)
 		{
 			if (s1.GetElem(i) == '(')
-				throw M_Exeption("an opening bracket is not found");
+				throw M_Exeption("a closing bracket is not found");
 			q = q + s1.GetElem(i);
 		}
 		return q;

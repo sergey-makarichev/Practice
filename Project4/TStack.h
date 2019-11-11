@@ -20,6 +20,7 @@ public:
 	int Get_top();
 	ValueType GetElem(int index);
 	ValueType Pop();
+	ValueType Top();
 };
 
 template <class ValueType>
@@ -28,6 +29,12 @@ ValueType TStack<ValueType>::GetElem(int index)
 	if ((index < 0) || (index > this->top))
 		throw M_Exeption("Invalid index");
 	return(this->elems[index]);
+}
+
+template <class ValueType>
+ValueType TStack<ValueType>::Top()
+{
+	return (elems[top]);
 }
 
 

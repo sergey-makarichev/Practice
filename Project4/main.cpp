@@ -13,7 +13,7 @@ int main()
 	}
 	catch (M_Exeption &exception)
 	{
-		cout << " Error: "<< exception.what() << endl;
+		cerr << " Error: "<< exception.what() << endl;
 		system("pause");
 		return 0;
 	}
@@ -40,7 +40,7 @@ int main()
 	}
 	catch (M_Exeption &exception)
 	{
-		cout << " Error: " << exception.what() << endl;
+		cerr << " Error: " << exception.what() << endl;
 		system("pause");
 		return 0;
 	}
