@@ -2,7 +2,7 @@
 #include "TStack.h"
 using namespace std;
 
-string Postfix::PostfixForm(string v)
+string Postfix::PostfixForm(string &v)
 {
 	    TStack<char> s1(v.length());
 		TStack<char> s2(v.length());
@@ -13,7 +13,8 @@ string Postfix::PostfixForm(string v)
 				if (i > 0)
 				{
 					if ((v[i - 1] >= 65) && (v[i - 1] <= 90))
-						throw M_Exeption("two letters stand side by side");
+						throw M_Exeption
+						("two letters stand side by side");
 				}
 				s1.Push(v[i]);
 			}
@@ -67,7 +68,7 @@ string Postfix::PostfixForm(string v)
 		return q;
 }
 
-float Postfix::Calculating(string v, string name, float* values)
+float Postfix::Calculating(string &v, string name, float* values)
 {
 	TStack<float> s(v.length());
 	float a, b;

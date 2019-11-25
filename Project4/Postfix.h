@@ -9,6 +9,6 @@ class Postfix
 private:
 	static int Prioritet(char v);
 public:
-	static string PostfixForm(string v);
-	static float Calculating(string v, string name, float* values);
+	static string PostfixForm(string &v);
+	static float Calculating(string &v, string name, float* values);
 };
