@@ -14,25 +14,18 @@ public:
 	TStack(int size);
 	TStack(const TStack &s);
 	~TStack(); 
+
 	bool IsEmpty()const;
 	bool IsFull()const;
+	
 	void Push(ValueType e);
-	int Get_top();
-	ValueType GetElem(int index);
-	ValueType Pop();
-	ValueType Top();
+	void Pop();
+	ValueType Top() const;
 };
 
-template <class ValueType>
-ValueType TStack<ValueType>::GetElem(int index)
-{
-	if ((index < 0) || (index > this->top))
-		throw M_Exeption("Invalid index");
-	return(this->elems[index]);
-}
 
 template <class ValueType>
-ValueType TStack<ValueType>::Top()
+ValueType TStack<ValueType>::Top() const
 {
 	return (elems[top]);
 }
@@ -82,15 +75,9 @@ void TStack<ValueType> ::Push(ValueType e)
 }
 
 template <class ValueType>
-ValueType TStack<ValueType>::Pop()
+void TStack<ValueType>::Pop()
 {
 	if (IsEmpty())
 		throw M_Exeption("Stack is empty");
-	return(elems[top--]);
-}
-
-template <class ValueType>
-int TStack<ValueType>::Get_top()
-{
-	return(this->top);
+	top--;
 }

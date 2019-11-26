@@ -18,6 +18,10 @@ int main()
 		return 0;
 	}
 	cout << str << endl;
+	char* operands;
+	float* values;
+	int count;
+	Postfix :: GetOperandsValues(/*const string &*/ str, /*char*&*/ operands, /*float*&*/ values, /*int&*/ count);
 	for (int i = 0; i < str.length(); i++)
 	{
 		if ((str[i] >= 65) && (str[i] <= 90))

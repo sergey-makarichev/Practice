@@ -2,7 +2,7 @@
 #include "TStack.h"
 using namespace std;
 
-string Postfix::PostfixForm(string &v)
+string Postfix::PostfixForm(const string &v)
 {
 	    TStack<char> s1(v.length());
 		TStack<char> s2(v.length());
@@ -28,7 +28,8 @@ string Postfix::PostfixForm(string &v)
 					{
 						while ((Prioritet(v[i]) <= Prioritet(s2.Top())) && (!s2.IsEmpty()))
 						{
-							s1.Push(s2.Pop());
+							s1.Push(s2.Top());
+							s2.Pop();
 						}
 						s2.Push(v[i]);
 					}
@@ -45,9 +46,10 @@ string Postfix::PostfixForm(string &v)
 			{
 				while ((s2.Top()) != '(')
 				{
-					if (s2.Get_top() == -1)
+					if (s2.Top() == -1)
 						throw M_Exeption("an opening bracket is not found");
-					s1.Push(s2.Pop());
+					s1.Push(s2.Top());
+					s2.Pop();
 				}
 				s2.Pop();
 			}
@@ -56,19 +58,32 @@ string Postfix::PostfixForm(string &v)
 			else
 				throw  M_Exeption("one of the characters is entered incorrectly");
 		}
-		while (s2.Get_top() != -1)
-			s1.Push(s2.Pop());
+		while (s2.Top() != -1)
+		{
+			s1.Push(s2.Top());
+			s2.Pop();
+		}
 		string q;
-		for (int i = 0; i < s1.Get_top() + 1; i++)
+		while (s1.Top() != -1)
+		{
+			q = q + s1.Top();
+			s1.Pop();
+		}
+		string q1;
+		for (int i = 0; i < q.length(); i++)
+		{
+			q1[i] = q[q.length() - (i + 1)];
+		}
+		/*for (int i = 0; i < s1.Top() + 1; i++)
 		{
 			if (s1.GetElem(i) == '(')
 				throw M_Exeption("a closing bracket is not found");
 			q = q + s1.GetElem(i);
-		}
-		return q;
+		}*/
+		return q1;
 }
 
-float Postfix::Calculating(string &v, string name, float* values)
+float Postfix::Calculating(const string& v, char* operands, float* values, int count)
 {
 	TStack<float> s(v.length());
 	float a, b;
@@ -78,7 +93,7 @@ float Postfix::Calculating(string &v, string name, float* values)
 		{
 			for (int k = 0; k < v.length(); k++)
 			{
-				if (v[i] == name[k])
+				if (v[i] == operands[k])
 				{
 					s.Push(values[k]);
 					break;
@@ -87,8 +102,10 @@ float Postfix::Calculating(string &v, string name, float* values)
 		}
 		else if ((v[i] == 42) || (v[i] == 43) || (v[i] == 45) || (v[i] == 47))
 		{
-			a = s.Pop();
-			b = s.Pop();
+			a = s.Top();
+			s.Pop();
+			b = s.Top();
+			s.Pop();
 			switch (v[i])
 			{
 			case '*':
@@ -109,7 +126,52 @@ float Postfix::Calculating(string &v, string name, float* values)
 		}
 
 	}
-	return (s.GetElem(s.Get_top()));
+	return (s.Top());
+}
+
+void Postfix::GetOperandsValues(const string& postfix, char*& operands, float*& values, int& count)
+{
+	for (int i = 0; i < postfix.length; i++)
+	{
+		if ((postfix[i] >= 65) && (postfix[i] <= 90))
+			count++;
+	}
+	char* operands = new char[count];
+	int k = 0;
+	for (int i = 0; i < postfix.length(); i++)
+	{
+		if ((postfix[i] >= 65) && (postfix[i] <= 90))
+		{
+			if (k == 0)
+			{
+				operands[0] = postfix[i];
+				k++;
+				continue;
+			}
+			for(i = 1; i < postfix.length(); i)
+			
+			
+		}
+	}
+	float* value = new float[name.length()];
+	for (int i = 0; i < name.length(); i++)
+	{
+		cout << "enter the value of " << name[i] << ": " << endl;
+		cin >> value[i];
+	}
+	float k = 0;
+	try
+	{
+		k = Postfix::Calculating(str, name, value);
+	}
+	catch (M_Exeption& exception)
+	{
+		cerr << " Error: " << exception.what() << endl;
+		system("pause");
+		return 0;
+	}
+	cout << str << "  =" << k << endl;
+	system("pause");
 }
 
 int Postfix::Prioritet(char v)
