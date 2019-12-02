@@ -6,6 +6,8 @@ string Postfix::PostfixForm(const string &v)
 {
 	    TStack<char> s1(v.length());
 		TStack<char> s2(v.length());
+		if((v[0] == 42) || (v[0] == 43) || (v[0] == 45) || (v[0] == 47))
+			throw M_Exeption("an expression cannot start with operands");
 		for (int i = 0; i < v.length(); i++)
 		{
 			if ((v[i] >= 65) && (v[i] <= 90))
@@ -13,13 +15,14 @@ string Postfix::PostfixForm(const string &v)
 				if (i > 0)
 				{
 					if ((v[i - 1] >= 65) && (v[i - 1] <= 90))
-						throw M_Exeption
-						("two letters stand side by side");
+						throw M_Exeption("two letters stand side by side");
 				}
 				s1.Push(v[i]);
 			}
 			else if ((v[i] == 42) || (v[i] == 43) || (v[i] == 45) || (v[i] == 47))
 			{
+				if ((v[i-1] == 42) || (v[i-1] == 43) || (v[i-1] == 45) || (v[i-1] == 47))
+					throw M_Exeption("2 operands stand side by side");
 				if (s2.IsEmpty())
 					s2.Push(v[i]);
 				else
@@ -46,7 +49,7 @@ string Postfix::PostfixForm(const string &v)
 			{
 				while ((s2.Top()) != '(')
 				{
-					if (s2.Top() == -1)
+					if (s2.IsEmpty())
 						throw M_Exeption("an opening bracket is not found");
 					s1.Push(s2.Top());
 					s2.Pop();
@@ -58,28 +61,25 @@ string Postfix::PostfixForm(const string &v)
 			else
 				throw  M_Exeption("one of the characters is entered incorrectly");
 		}
-		while (s2.Top() != -1)
+		while (!s2.IsEmpty())
 		{
 			s1.Push(s2.Top());
 			s2.Pop();
 		}
 		string q;
-		while (s1.Top() != -1)
+		while (!s1.IsEmpty())
 		{
 			q = q + s1.Top();
 			s1.Pop();
 		}
 		string q1;
-		for (int i = 0; i < q.length(); i++)
+		int len = q.length();
+		for (int i = 0; i < len; i++)
 		{
-			q1[i] = q[q.length() - (i + 1)];
-		}
-		/*for (int i = 0; i < s1.Top() + 1; i++)
-		{
-			if (s1.GetElem(i) == '(')
+			if(q[len - (i + 1)] == '(')
 				throw M_Exeption("a closing bracket is not found");
-			q = q + s1.GetElem(i);
-		}*/
+			q1 = q1 + q[len - (i + 1)];
+		}
 		return q1;
 }
 
@@ -131,47 +131,40 @@ float Postfix::Calculating(const string& v, char* operands, float* values, int c
 
 void Postfix::GetOperandsValues(const string& postfix, char*& operands, float*& values, int& count)
 {
-	for (int i = 0; i < postfix.length; i++)
-	{
-		if ((postfix[i] >= 65) && (postfix[i] <= 90))
-			count++;
-	}
-	char* operands = new char[count];
-	int k = 0;
+	char* symbols = new char[postfix.length()];
 	for (int i = 0; i < postfix.length(); i++)
 	{
+		int f = 0;
 		if ((postfix[i] >= 65) && (postfix[i] <= 90))
 		{
-			if (k == 0)
+			if (count == 0)
 			{
-				operands[0] = postfix[i];
-				k++;
+				symbols[count] = postfix[i];
+				count++;
 				continue;
 			}
-			for(i = 1; i < postfix.length(); i)
-			
-			
+			for (int j = 0; j < i; j++)
+			{
+				if (postfix[i] == postfix[j])
+					f = 1;
+			}
+				if (f == 0)
+				{
+					symbols[count] = postfix[i];
+					count++;
+				}
 		}
 	}
-	float* value = new float[name.length()];
-	for (int i = 0; i < name.length(); i++)
+	operands = new char[count];
+	for (int i = 0; i < count; i++)
+		operands[i] = symbols[i];
+	values = new float[count];
+	for (int i = 0; i < count; i++)
 	{
-		cout << "enter the value of " << name[i] << ": " << endl;
-		cin >> value[i];
+		cout << "enter the value of " << operands[i] << ": " << endl;
+		cin >> values[i];
 	}
-	float k = 0;
-	try
-	{
-		k = Postfix::Calculating(str, name, value);
-	}
-	catch (M_Exeption& exception)
-	{
-		cerr << " Error: " << exception.what() << endl;
-		system("pause");
-		return 0;
-	}
-	cout << str << "  =" << k << endl;
-	system("pause");
+	delete[] symbols;
 }
 
 int Postfix::Prioritet(char v)

@@ -14,10 +14,8 @@ public:
 	TStack(int size);
 	TStack(const TStack &s);
 	~TStack(); 
-
 	bool IsEmpty()const;
 	bool IsFull()const;
-	
 	void Push(ValueType e);
 	void Pop();
 	ValueType Top() const;
