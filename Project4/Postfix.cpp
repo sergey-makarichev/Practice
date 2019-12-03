@@ -91,7 +91,7 @@ float Postfix::Calculating(const string& v, char* operands, float* values, int c
 	{
 		if ((v[i] >= 65) && (v[i] <= 90))
 		{
-			for (int k = 0; k < v.length(); k++)
+			for (int k = 0; k < count; k++)
 			{
 				if (v[i] == operands[k])
 				{
@@ -124,6 +124,8 @@ float Postfix::Calculating(const string& v, char* operands, float* values, int c
 				break;
 			}
 		}
+		else
+			throw "Incorrect symbol";
 
 	}
 	return (s.Top());
@@ -131,40 +133,38 @@ float Postfix::Calculating(const string& v, char* operands, float* values, int c
 
 void Postfix::GetOperandsValues(const string& postfix, char*& operands, float*& values, int& count)
 {
-	char* symbols = new char[postfix.length()];
+	count = 0;
 	for (int i = 0; i < postfix.length(); i++)
 	{
-		int f = 0;
 		if ((postfix[i] >= 65) && (postfix[i] <= 90))
 		{
-			if (count == 0)
-			{
-				symbols[count] = postfix[i];
-				count++;
-				continue;
-			}
-			for (int j = 0; j < i; j++)
-			{
-				if (postfix[i] == postfix[j])
-					f = 1;
-			}
-				if (f == 0)
-				{
-					symbols[count] = postfix[i];
-					count++;
-				}
+			count++;
 		}
 	}
+
 	operands = new char[count];
-	for (int i = 0; i < count; i++)
-		operands[i] = symbols[i];
 	values = new float[count];
-	for (int i = 0; i < count; i++)
-	{
-		cout << "enter the value of " << operands[i] << ": " << endl;
-		cin >> values[i];
+
+	int n = 0;
+	for (int i = 0; i < postfix.length(); i++)
+	{		
+		if ((postfix[i] >= 65) && (postfix[i] <= 90))
+		{
+			int f = 0;
+			for (int j = 0; j < n; j++)
+			{
+				if (postfix[i] == operands[j])
+					f = 1;
+			}
+			if (f == 0)
+			{
+				operands[n] = postfix[i];
+				cout << "enter the value of " << operands[n] << ": " << endl;
+				cin >> values[n];
+				n++;
+			}
+		}
 	}
-	delete[] symbols;
 }
 
 int Postfix::Prioritet(char v)
