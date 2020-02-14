@@ -1,0 +1,8 @@
+﻿  main.cpp
+D:\программы\си ++ гитхаб\Practice\Project6\main.cpp(6,29): error C2664: "TNode<float,float>::TNode(const TNode<float,float> &)": невозможно преобразовать аргумент 2 из "int" в "TData *"
+          with
+          [
+              TData=float
+          ]
+D:\программы\си ++ гитхаб\Practice\Project6\main.cpp(6,27): message : Для преобразования из целого типа в указатель требуется reinterpret_cast, приведение в стиле С или приведение в стиле функции
+D:\программы\си ++ гитхаб\Practice\Project6\TNode.h(13,2): message : см. объявление "TNode<float,float>::TNode"
