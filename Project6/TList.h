@@ -45,7 +45,7 @@ TList<TKey, TData> ::TList()
 }
 
 template<typename TKey, typename TData>
-TList<TKey, TData> ::TList(TNode<TKey, TData>* node)
+TList<TKey, TData> ::TList(TNode<TKey, TData>* node) // проход до конца списка от node
 {
 	pFirst = node;
 	pCurrent = node;
@@ -100,8 +100,6 @@ TNode<TKey, TData>* TList<TKey, TData> ::Search(TKey key)
 	TNode<TKey, TData>* tmp = pFirst;
 	while ((tmp != nullptr) && (tmp->key != key))
 		tmp = tmp->pNext;
-	if (tmp == nullptr)
-		throw"no key";
 	return tmp;
 }
 
@@ -112,7 +110,7 @@ void TList<TKey, TData> ::InsertBegin(TKey NewKey, TData* NewData)
 	tmp->key = NewKey;
 	tmp->pData = new TData(*NewData);
 	tmp->pNext = pFirst;
-	if (pCurrent = pFirst)
+	if (pCurrent == pFirst)
 		pPrevious = tmp;
 	pFirst = tmp;
 	return;
@@ -127,7 +125,7 @@ void TList<TKey, TData> ::InsertBegin(TNode<TKey, TData>* node)
 template<typename TKey, typename TData>
 void TList<TKey, TData> ::InsertEnd(TKey NewKey, TData* NewData)
 {
-	if (pFirst == nullptr)
+	if (pFirst == nullptr)//insert begin
 	{
 		pFirst = new TNode<TKey, TData>;
 		pFirst->key = NewKey;
@@ -141,7 +139,7 @@ void TList<TKey, TData> ::InsertEnd(TKey NewKey, TData* NewData)
 	while (tmp->pNext != 0)
 		tmp = tmp->pNext;
 	tmp->pNext = new TNode<TKey, TData>(NewKey, *NewData);
-	tmp->pNext->pNext = nullptr;
+	tmp->pNext->pNext = nullptr;// navigation
 	return;
 }
 
@@ -161,7 +159,7 @@ void TList<TKey, TData> ::InsertAfter(TKey SearchKey, TNode<TKey, TData>* node)
 		throw"Key not found";
 	TNode<TKey, TData>* NewNode = new TNode<TKey, TData>(node->key, node->pData);
 	NewNode->pNext = tmp->pNext;
-	tmp->pNext = NewNode;
+	tmp->pNext = NewNode;// navigation
 	return;
 }
 
@@ -170,7 +168,7 @@ void TList<TKey, TData> ::InsertBefore(TKey SearchKey, TNode<TKey, TData>* node)
 {
 	if (pFirst == nullptr)
 		throw "empty";
-	if (pFirst->key == SearchKey)
+	if (pFirst->key == SearchKey)// insert begin
 	{
 		TNode<TKey, TData>* NewNode = new TNode<TKey, TData>(node->key, node->pData);
 		NewNode->pNext = pFirst;
@@ -180,13 +178,13 @@ void TList<TKey, TData> ::InsertBefore(TKey SearchKey, TNode<TKey, TData>* node)
 		return;
 	}
 	TNode<TKey, TData>* tmp = pFirst;
-	while (tmp->pNext->key != SearchKey && tmp != nullptr)
+	while (tmp->pNext->key != SearchKey && tmp != nullptr) // invert
 		tmp = tmp->pNext;
 	if (tmp == nullptr)
 		throw"Key not found";
 	TNode<TKey, TData>* NewNode = new TNode<TKey, TData>(node->key, node->pData);
 	NewNode->pNext = tmp->pNext;
-	tmp->pNext = NewNode;
+	tmp->pNext = NewNode;// navigation
 	return;
 }
 
@@ -199,7 +197,7 @@ void TList<TKey, TData> ::Remove(TKey SearchKey)
 	if (pFirst->key == SearchKey)
 	{
 		pFirst = pFirst->pNext;
-		delete tmp;
+		delete tmp;// navigation
 		return;
 	}
 	while (tmp->pNext->key != SearchKey && tmp != nullptr)
@@ -208,7 +206,7 @@ void TList<TKey, TData> ::Remove(TKey SearchKey)
 		throw"Key not found";
 	TNode<TKey, TData>* node = tmp->pNext;
 	tmp->pNext = tmp->pNext->pNext;
-	delete node;
+	delete node;// navigation
 	return;
 }
 
@@ -228,7 +226,7 @@ template<typename TKey, typename TData>
 void TList<TKey, TData> ::Reset()
 {
 	if (pFirst == nullptr)
-		throw "list is empty";
+		throw "list is empty";//
 	pCurrent = pFirst;
 	pPrevious = nullptr;
 	pNext = pCurrent->pNext;
@@ -244,7 +242,6 @@ void TList<TKey, TData> ::Next()
 	pCurrent = pNext;
 	if (pNext != nullptr)
 		pNext = pNext->pNext;
-	return;
 }
 
 template<typename TKey, typename TData>

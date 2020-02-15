@@ -10,7 +10,7 @@ public:
 	TData* pData;
 	TNode<TKey, TData>* pNext;
 	TNode();
-	TNode(TKey, TData*);
+	TNode(TKey, TData*); // TNode<TKey, TData>* pNext = 0
 	TNode(const TNode&);
 	~TNode();
 };

@@ -20,12 +20,12 @@ public:
 	{
 	}
 	~TNode();
-	TNode<int, float>* operator+(const TNode&);
-	TNode<int, float>* operator-(const TNode&);
-	TNode<int, float>* operator*(const TNode&);
-	bool operator <(const TNode&)const;
-	bool operator !=(const TNode&)const;
-	bool operator ==(const TNode&)const;
+	TNode<int, float>* operator+(const TNode<int, float>&);
+	TNode<int, float>* operator-(const TNode<int, float>&);
+	TNode<int, float>* operator*(const TNode<int, float>&);
+	bool operator <(const TNode<int, float>&)const;
+	bool operator !=(const TNode<int, float>&)const;
+	bool operator ==(const TNode<int, float>&)const;
 };
 
 TNode<int, float> :: ~TNode()
@@ -54,7 +54,7 @@ TNode<int, float>* TNode<int, float> :: operator+(const TNode& OtherMonom)
 	if (m == OtherMonom)
 	{
 		m.pData += OtherMonom.pData;
-		return &m;
+		return &m; //мусор после выхода из метода
 	}
 	else
 		throw"different degree";
@@ -66,7 +66,7 @@ TNode<int, float>* TNode<int, float> :: operator-(const TNode& OtherMonom)
 	if (m == OtherMonom)
 	{
 		m.pData -= OtherMonom.pData;
-		return &m;
+		return &m; //мусор после выхода из метода
 	}
 	else
 		throw"different degree";
