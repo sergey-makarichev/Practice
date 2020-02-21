@@ -9,17 +9,37 @@ struct TPriorityQueueElem
 {
 	int priority;
 	float elem;
+	TPriorityQueueElem();
+	TPriorityQueueElem(int priority, float elem);
 
 	bool operator > (const TPriorityQueueElem& e) const
 	{
 		return priority > e.priority;
 	}
+	bool operator < (const TPriorityQueueElem& e) const
+	{
+		return priority > e.priority;
+	}
 };
+
+TPriorityQueueElem::TPriorityQueueElem()
+{
+	priority = 1;
+	elem = 1;
+}
+
+TPriorityQueueElem::TPriorityQueueElem(int priority, float elem)
+{
+	if (priority < 0)
+		throw M_Exeption("wrong priority");
+	this->priority = priority;
+	this->elem = elem;
+}
 
 template<class TElemType>
 class TQueue
 {
-protected:
+private:
 	int size;
 	int count;
 	int hi;
@@ -37,23 +57,82 @@ public:
 	friend istream& operator>> (istream& in, TQueue& q);
 };
 
-template<>
-class TQueue<TPriorityQueueElem>
+template<class TElemType>
+TQueue<TElemType>::TQueue(int size)
 {
-protected:
-	int size;
-	int count;
-	int hi;
-	int li;
-	TPriorityQueueElem* elems;
-public:
-	TQueue(int size = 10);
-	TQueue(const TQueue& q);
-	~TQueue();
-	bool IsEmpty()const;
-	bool IsFull()const;
-	void Push(TPriorityQueueElem q);
-	TPriorityQueueElem Pop();
-	friend ostream& operator<< (ostream& out, const TQueue& q);
-	friend istream& operator>> (istream& in, TQueue& q);
-};
+	this->size = size;
+	this->elems = new TElemType[size];
+	this->count = 0;
+	this->hi = 0;
+	this->li = -1;
+}
+
+template<class TElemType>
+TQueue<TElemType>::TQueue(const TQueue& q)
+{
+	size = q.size;
+	count = q.count;
+	hi = q.hi;
+	li = q.li;
+	int index = hi;
+	this->elems = new TElemType[size];
+	if (q.IsEmpty())
+		return;
+	while (index != li)
+	{
+		elems[index] = q.elems[index];
+		index = (++index) % size;
+	}
+	elems[index] = q.elems[index];
+}
+
+template<class TElemType>
+TQueue<TElemType>::~TQueue()
+{
+	delete[] elems;
+}
+
+template<class TElemType>
+bool TQueue<TElemType>::IsEmpty()const
+{
+	return(count == 0);
+}
+
+template<class TElemType>
+bool TQueue<TElemType>::IsFull()const
+{
+	return(count == size);
+}
+
+template<class TElemType>
+void TQueue<TElemType>::Push(TElemType q)
+{
+	if (IsFull())
+		throw M_Exeption("queue is full");
+	count++;
+	li = ++li % size;
+	elems[li] = q;
+}
+
+template<class TElemType>
+TElemType TQueue<TElemType>::Pop()
+{
+	if (IsEmpty())
+		throw M_Exeption("queue is empty");
+	count--;
+	TElemType p = elems[hi];
+	(++hi) % size;
+	return p;
+}
+
+/*template<class TElemType>
+ostream& operator<< (ostream& out, const TQueue& q)
+{
+	if (q.IsEmpty())
+		throw M_Exeption("queue is empty");
+	for (int i = q.hi; i <= q.li; (++i) % q.size)
+	{
+		out << q.elems[i] << "  ";
+	}
+	return out;
+}*/

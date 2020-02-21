@@ -143,8 +143,7 @@
     <ClInclude Include="TQueue.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="PTQueue.cpp" />
-    <ClCompile Include="TQueue.cpp" />
+    <ClCompile Include="main.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
