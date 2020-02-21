@@ -2,6 +2,7 @@
 #include "TList.h"
 #include "TNode.h"
 #include "TMonom.h"
+#include <iostream>
 
 using namespace std;
 
@@ -26,6 +27,7 @@ public:
 	void InsertAfter(int, TNode<int, float>*);
 	void InsertBefore(int, TNode<int, float>*);
 	void Remove(int);
+	void Sort();
 
 	bool IsEmpty()const;
 	bool IsEnded()const;
@@ -34,6 +36,10 @@ public:
 
 	TNode<int, float>* GetFirst()const;
 	TNode<int, float>* GetCurrent()const;
+	TNode<int, float>* GetNext()const;
+	TNode<int, float>* GetPrev()const;
+
+	friend class Polinom;
 };
 
 TList<int, float> ::TList()
@@ -48,20 +54,26 @@ TList<int, float> ::TList(TNode<int, float>* first)
 {
 	pPrevious = nullptr;
 	pNext = nullptr;
-	TNode<int, float>* node = new TNode<int, float>(*first);
-	pFirst = node;
-	TNode<int, float>* prev = pFirst;
-	TNode<int, float>* it = first->pNext;
-	while (it)
+	pCurrent = nullptr;
+	if (first == nullptr)
+		pFirst == nullptr;
+	else
 	{
-		TNode<int, float>* tmp = new TNode<int, float>(*it);
-		prev->pNext = it;
-		prev = tmp;
-		it = it->pNext;
+		TNode<int, float>* node = new TNode<int, float>(*first);
+		pFirst = node;
+		TNode<int, float>* prev = pFirst;
+		TNode<int, float>* it = first->pNext;
+		while (it)
+		{
+			TNode<int, float>* tmp = new TNode<int, float>(*it);
+			prev->pNext = it;
+			prev = tmp;
+			it = it->pNext;
+		}
+		prev->pNext = nullptr;
+		pCurrent = pFirst;
+		pNext = pCurrent->pNext;
 	}
-	prev->pNext = nullptr;
-	pCurrent = pFirst;
-	pNext = pCurrent->pNext;
 }
 
 TList<int, float> ::TList(const TList& list)
@@ -76,9 +88,7 @@ TList<int, float> ::TList(const TList& list)
 	else
 	{
 		pFirst = new TNode<int, float>(*list.pFirst);
-		pPrevious = nullptr;
-		pCurrent = pFirst;
-		pNext = pFirst->pNext;
+		Reset();
 		TNode<int, float>* tmp1(pFirst), * tmp2(list.pFirst);
 		while (tmp2->pNext != nullptr)
 		{
@@ -99,6 +109,46 @@ TList<int, float> ::~TList()
 		delete pFirst;
 		pFirst = pNext;
 	}
+	pCurrent = nullptr;
+	pPrevious = nullptr;
+	pNext = nullptr;
+}
+
+void TList<int, float> ::Sort()
+{
+	if (pFirst == nullptr)
+		return;
+	if (pFirst->pNext == nullptr)
+		return;
+	TNode<int, float>* a, *b, *rev, *prev_a;
+	for (bool ListDone = true; ListDone;)
+	{
+		ListDone = false;
+		a = pFirst;
+		b = pFirst->pNext;
+		prev_a = a;
+		while (b != nullptr)
+		{
+			if (a->key < b->key)
+			{
+				if (prev_a = a)
+					pFirst = b;
+				else
+					prev_a->pNext = b;
+				a->pNext = b->pNext;
+				b->pNext = a;
+				rev = a;
+				a = b;
+				b = rev;
+				ListDone = true;
+			}
+			prev_a = a;
+			a = a->pNext;
+			b = b->pNext;
+		}
+
+	}
+	Reset();
 }
 
 TNode<int, float>* TList<int, float> ::Search(int key)
@@ -109,23 +159,14 @@ TNode<int, float>* TList<int, float> ::Search(int key)
 	while ((tmp != nullptr) && (tmp->key != key))
 		tmp = tmp->pNext;
 	if (tmp == nullptr)
-		throw"Key not found";
+		cout << "there is no such key";
 	return tmp;
 }
 
 void TList<int, float> ::InsertBegin(int NewKey, float NewData)
 {
-	if (pFirst == nullptr)
-	{
-		pFirst = new TNode<int, float>(NewKey, NewData);
-		pCurrent = pFirst;
-		pPrevious = nullptr;
-		pNext = nullptr;
-		return;
-	}
-	TNode<int, float>* tmp = new TNode<int, float>(NewKey, NewData);
-	tmp->pNext = pFirst;
-	if (pCurrent = pFirst)
+	TNode<int,float>* tmp = new TNode<int,float>(NewKey, NewData, pFirst);
+	if (pCurrent == pFirst)
 		pPrevious = tmp;
 	pFirst = tmp;
 	return;
@@ -141,16 +182,14 @@ void TList<int, float> ::InsertEnd(int NewKey, float NewData)
 {
 	if (pFirst == nullptr)
 	{
-		pFirst = new TNode<int, float>(NewKey, NewData);
-		pCurrent = pFirst;
-		pPrevious = nullptr;
-		pNext = nullptr;
+		InsertBegin(NewKey, NewData);
+		Reset();
 		return;
 	}
-	TNode<int, float>* tmp = pFirst;
+	TNode<int,float>* tmp = pFirst;
 	while (tmp->pNext != 0)
 		tmp = tmp->pNext;
-	tmp->pNext = new TNode<int, float>(NewKey, NewData);
+	tmp->pNext = new TNode<int,float>(NewKey, NewData);
 	if (pCurrent == tmp)
 		pNext = tmp->pNext;
 	tmp->pNext->pNext = nullptr;
@@ -164,13 +203,15 @@ void TList<int, float> ::InsertEnd(TNode<int, float>* node)
 
 void TList<int, float> ::InsertAfter(int SearchKey, TNode<int, float>* node)
 {
-	TNode<int, float>* tmp = pFirst;
+	TNode<int,float>* tmp = pFirst;
 	while (tmp != nullptr && tmp->key != SearchKey)
 		tmp = tmp->pNext;
 	if (tmp == nullptr)
-		throw"Key not found";
-	TNode<int, float>* NewNode = new TNode<int, float>(node->key, node->pData);
-	NewNode->pNext = tmp->pNext;
+	{
+		cout << "there is no such key" << endl;
+		return;
+	}
+	TNode<int,float>* NewNode = new TNode<int,float>(node->key, node->pData, tmp->pNext);
 	if (pCurrent == tmp)
 		pNext = NewNode;
 	if (pCurrent == tmp->pNext)
@@ -185,66 +226,54 @@ void TList<int, float> ::InsertBefore(int SearchKey, TNode<int, float>* node)
 		throw "empty";
 	if (pFirst->key == SearchKey)
 	{
-		TNode<int, float>* NewNode = new TNode<int, float>(node->key, node->pData);
-		NewNode->pNext = pFirst;
-		if (pCurrent = pFirst)
-			pPrevious = NewNode;
-		pFirst = NewNode;
+		InsertBegin(node->key, node->pData);
 		return;
 	}
-	TNode<int, float>* tmp = pFirst;
-	while (tmp->pNext->key != SearchKey && tmp != nullptr)
+	TNode<int,float>* tmp = pFirst;
+	while (tmp != nullptr && tmp->pNext->key != SearchKey)
 		tmp = tmp->pNext;
 	if (tmp == nullptr)
-		throw"Key not found";
-	TNode<int, float>* NewNode = new TNode<int, float>(node->key, node->pData);
-	NewNode->pNext = tmp->pNext;
+	{
+		cout << "there is no such key" << endl;
+		return;
+	}
+	TNode<int, float>* NewNode = new TNode<int, float>(node->key, node->pData, tmp->pNext);
 	if (pCurrent == tmp->pNext)
 		pPrevious = NewNode;
 	if (pCurrent == tmp)
 		pNext = NewNode;
 	tmp->pNext = NewNode;
-	return;
 }
 
 void TList<int, float> ::Remove(int SearchKey)
 {
 	if (pFirst == nullptr)
 		throw "list is empty";
-	TNode<int, float>* tmp = pFirst;
+	TNode<int,float>* tmp = pFirst;
 	if (pFirst->key == SearchKey)
 	{
-		if (pCurrent == pFirst)
-		{
-			pCurrent = pNext;
-			if (pNext)
-				pNext = pNext->pNext;
-			else
-				pNext = nullptr;
-			pFirst = pFirst->pNext;
-			delete tmp;
-			return;
-		}
-		if (pCurrent == pFirst->pNext)
-		{
-			pPrevious = nullptr;
-			pFirst = pFirst->pNext;
-			delete tmp;
-			return;
-		}
 		pFirst = pFirst->pNext;
-		delete tmp;
+		if (pCurrent == pFirst)
+			pPrevious = nullptr;
+		delete tmp;// navigation
+		Reset();
+	}
+	while (tmp != nullptr && tmp->pNext->key != SearchKey)
+		tmp = tmp->pNext;
+	if (tmp == nullptr)
+	{
+		cout << "there is no such key for remove" << endl;
 		return;
 	}
-	tmp = Search(SearchKey);
-	Reset();
-	while (pCurrent != tmp)
-		Next();
-	pPrevious->pNext = pNext;
-	pCurrent = pNext;
-	pNext = pCurrent->pNext;
-	delete tmp;
-	return;
+	TNode<int,float>* node = tmp->pNext;
+	tmp->pNext = tmp->pNext->pNext;
+	if (pCurrent == node)
+		Reset();
+	if (pCurrent == tmp)
+		pNext = tmp->pNext;
+	if (pCurrent == tmp->pNext)
+		pPrevious = tmp;
+	delete node;
 }
 
 bool TList<int, float> ::IsEmpty()const
@@ -286,4 +315,14 @@ TNode<int, float>* TList<int, float> ::GetFirst()const
 TNode<int, float>* TList<int, float> ::GetCurrent()const
 {
 	return pCurrent;
+}
+
+TNode<int,float>* TList<int,float> ::GetNext()const
+{
+	return pNext;
+}
+
+TNode<int,float>* TList<int,float> ::GetPrev()const
+{
+	return pPrevious;
 }

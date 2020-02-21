@@ -1,8 +1,5 @@
-﻿  main.cpp
-D:\программы\си ++ гитхаб\Practice\Project6\main.cpp(6,29): error C2664: "TNode<float,float>::TNode(const TNode<float,float> &)": невозможно преобразовать аргумент 2 из "int" в "TData *"
-          with
-          [
-              TData=float
-          ]
-D:\программы\си ++ гитхаб\Practice\Project6\main.cpp(6,27): message : Для преобразования из целого типа в указатель требуется reinterpret_cast, приведение в стиле С или приведение в стиле функции
-D:\программы\си ++ гитхаб\Practice\Project6\TNode.h(13,2): message : см. объявление "TNode<float,float>::TNode"
+﻿  Polinom.cpp
+D:\программы\си ++ гитхаб\Practice\Project6\TPolinom.h(59,10): warning C4553: "==": результат выражения не используется; вы хотели использовать "="?
+D:\программы\си ++ гитхаб\Practice\Project6\Polinom.cpp(80,11): warning C4018: <: несоответствие типов со знаком и без знака
+D:\программы\си ++ гитхаб\Practice\Project6\Polinom.cpp(298,29): error C2276: !: недопустимая операция с выражением привязанной функции-члена
+D:\программы\си ++ гитхаб\Practice\Project6\Polinom.cpp(320,2): error C3490: "monoms" не может быть изменен, поскольку доступ к нему осуществляется через константный объект

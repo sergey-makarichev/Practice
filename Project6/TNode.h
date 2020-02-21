@@ -2,7 +2,7 @@
 
 using namespace std;
 
-template<typename TKey, class TData>
+template<typename TKey, typename TData>
 class TNode
 {
 public:
@@ -10,7 +10,7 @@ public:
 	TData* pData;
 	TNode<TKey, TData>* pNext;
 	TNode();
-	TNode(TKey, TData*); // TNode<TKey, TData>* pNext = 0
+	TNode(TKey, TData*, TNode<TKey, TData>* pNext = 0); // TNode<TKey, TData>* pNext = 0
 	TNode(const TNode&);
 	~TNode();
 };
@@ -23,12 +23,12 @@ TNode<TKey, TData>::TNode()
 }
 
 template<typename TKey, class TData>
-TNode<TKey, TData>::TNode(TKey key, TData* pData)
+TNode<TKey, TData>::TNode(TKey key, TData* pData, TNode<TKey, TData>* pNext)
 {
 	this->key = key;
 	//this->pData = pData;
 	this->pData = new TData(*(pData));
-	pNext = nullptr;
+	this->pNext = pNext;
 }
 
 template<typename TKey, class TData>

@@ -33,6 +33,8 @@ public:
 
 	TNode<TKey, TData>* GetFirst()const;
 	TNode<TKey, TData>* GetCurrent()const;
+	TNode<TKey, TData>* GetNext()const;
+	TNode<TKey, TData>* GetPrev()const;
 };
 
 template<typename TKey, typename TData>
@@ -45,12 +47,30 @@ TList<TKey, TData> ::TList()
 }
 
 template<typename TKey, typename TData>
-TList<TKey, TData> ::TList(TNode<TKey, TData>* node) // проход до конца списка от node
+TList<TKey, TData> ::TList(TNode<TKey, TData>* first) // проход до конца списка от node
 {
-	pFirst = node;
-	pCurrent = node;
 	pPrevious = nullptr;
 	pNext = nullptr;
+	pCurrent = nullptr;
+	if (first == nullptr)
+		pFirst == nullptr;
+	else
+	{
+		TNode<TKey, TData>* node = new TNode<TKey, TData>(*first);
+		pFirst = node;
+		TNode<TKey, TData>* prev = pFirst;
+		TNode<TKey, TData>* it = first->pNext;
+		while (it)
+		{
+			TNode<TKey, TData>* tmp = new TNode<TKey, TData>(*it);
+			prev->pNext = it;
+			prev = tmp;
+			it = it->pNext;
+		}
+		prev->pNext = nullptr;
+		pCurrent = pFirst;
+		pNext = pCurrent->pNext;
+	}
 }
 
 template<typename TKey, typename TData>
@@ -99,17 +119,16 @@ TNode<TKey, TData>* TList<TKey, TData> ::Search(TKey key)
 		throw"Error";
 	TNode<TKey, TData>* tmp = pFirst;
 	while ((tmp != nullptr) && (tmp->key != key))
-		tmp = tmp->pNext;
+		tmp = tmp->pNext; // нужна ли проверка на ненайденный ключ
+	if (tmp == nullptr)
+		cout << "there is no such key";
 	return tmp;
 }
 
 template<typename TKey, typename TData>
 void TList<TKey, TData> ::InsertBegin(TKey NewKey, TData* NewData)
 {
-	TNode<TKey, TData>* tmp = new TNode<TKey, TData>();
-	tmp->key = NewKey;
-	tmp->pData = new TData(*NewData);
-	tmp->pNext = pFirst;
+	TNode<TKey, TData>* tmp = new TNode<TKey, TData>(NewKey, NewData, pFirst);
 	if (pCurrent == pFirst)
 		pPrevious = tmp;
 	pFirst = tmp;
@@ -127,18 +146,16 @@ void TList<TKey, TData> ::InsertEnd(TKey NewKey, TData* NewData)
 {
 	if (pFirst == nullptr)//insert begin
 	{
-		pFirst = new TNode<TKey, TData>;
-		pFirst->key = NewKey;
-		pFirst->pData = new TData(*NewData);
-		pCurrent = pFirst;
-		pPrevious = nullptr;
-		pNext = nullptr;
+		InsertBegin(NewKey, NewData);
+		Reset();
 		return;
 	}
 	TNode<TKey, TData>* tmp = pFirst;
 	while (tmp->pNext != 0)
 		tmp = tmp->pNext;
-	tmp->pNext = new TNode<TKey, TData>(NewKey, *NewData);
+	tmp->pNext = new TNode<TKey, TData>(NewKey, NewData);
+	if (pCurrent == tmp)
+		pNext = tmp->pNext;
 	tmp->pNext->pNext = nullptr;// navigation
 	return;
 }
@@ -152,13 +169,21 @@ void TList<TKey, TData> ::InsertEnd(TNode<TKey, TData>* node)
 template<typename TKey, typename TData>
 void TList<TKey, TData> ::InsertAfter(TKey SearchKey, TNode<TKey, TData>* node)
 {
+	if (pFirst == nullptr)
+		throw "empty";
 	TNode<TKey, TData>* tmp = pFirst;
 	while (tmp != nullptr && tmp->key != SearchKey)
 		tmp = tmp->pNext;
 	if (tmp == nullptr)
-		throw"Key not found";
-	TNode<TKey, TData>* NewNode = new TNode<TKey, TData>(node->key, node->pData);
-	NewNode->pNext = tmp->pNext;
+	{
+		cout << "there is no such key" << endl;
+		return;
+	}
+	TNode<TKey, TData>* NewNode = new TNode<TKey, TData>(node->key, node->pData, tmp->pNext);
+	if (pCurrent == tmp)
+		pNext = NewNode;
+	if (pCurrent == tmp->pNext)
+		pPrevious = NewNode;
 	tmp->pNext = NewNode;// navigation
 	return;
 }
@@ -170,44 +195,55 @@ void TList<TKey, TData> ::InsertBefore(TKey SearchKey, TNode<TKey, TData>* node)
 		throw "empty";
 	if (pFirst->key == SearchKey)// insert begin
 	{
-		TNode<TKey, TData>* NewNode = new TNode<TKey, TData>(node->key, node->pData);
-		NewNode->pNext = pFirst;
-		if (pCurrent = pFirst)
-			pPrevious = NewNode;
-		pFirst = NewNode;
+		InsertBegin(node->key, node->pData);
 		return;
 	}
 	TNode<TKey, TData>* tmp = pFirst;
-	while (tmp->pNext->key != SearchKey && tmp != nullptr) // invert
+	while (tmp != nullptr && tmp->pNext->key != SearchKey) // invert
 		tmp = tmp->pNext;
 	if (tmp == nullptr)
-		throw"Key not found";
-	TNode<TKey, TData>* NewNode = new TNode<TKey, TData>(node->key, node->pData);
-	NewNode->pNext = tmp->pNext;
+	{
+		cout << "there is no such key" << endl;
+		return;
+	}
+	TNode<TKey, TData>* NewNode = new TNode<TKey, TData>(node->key, node->pData, tmp->pNext);
+	if (pCurrent == tmp->pNext)
+		pPrevious = NewNode;
+	if (pCurrent == tmp)
+		pNext = NewNode;
 	tmp->pNext = NewNode;// navigation
-	return;
 }
 
 template<typename TKey, typename TData>
 void TList<TKey, TData> ::Remove(TKey SearchKey)
 {
 	if (pFirst == nullptr)
-		throw "list is empty";
+		throw "list is empty"; 
 	TNode<TKey, TData>* tmp = pFirst;
 	if (pFirst->key == SearchKey)
 	{
 		pFirst = pFirst->pNext;
+		if (pCurrent == pFirst)
+			pPrevious = nullptr;
 		delete tmp;// navigation
-		return;
+		Reset();
 	}
-	while (tmp->pNext->key != SearchKey && tmp != nullptr)
+	while (tmp != nullptr && tmp->pNext->key != SearchKey)
 		tmp = tmp->pNext;
 	if (tmp == nullptr)
-		throw"Key not found";
+	{
+		cout << "there is no such key for remove" << endl;
+		return;
+	}
 	TNode<TKey, TData>* node = tmp->pNext;
 	tmp->pNext = tmp->pNext->pNext;
+	if (pCurrent == node)
+		Reset();
+	if (pCurrent == tmp)
+		pNext = tmp->pNext;
+	if (pCurrent == tmp->pNext)
+		pPrevious = tmp;
 	delete node;// navigation
-	return;
 }
 
 template<typename TKey, typename TData>
@@ -230,7 +266,6 @@ void TList<TKey, TData> ::Reset()
 	pCurrent = pFirst;
 	pPrevious = nullptr;
 	pNext = pCurrent->pNext;
-	return;
 }
 
 template<typename TKey, typename TData>
@@ -254,4 +289,16 @@ template<typename TKey, typename TData>
 TNode<TKey, TData>* TList<TKey, TData> ::GetCurrent()const
 {
 	return pCurrent;
+}
+
+template<typename TKey, typename TData>
+TNode<TKey, TData>* TList<TKey, TData> ::GetNext()const
+{
+	return pNext;
+}
+
+template<typename TKey, typename TData>
+TNode<TKey, TData>* TList<TKey, TData> ::GetPrev()const
+{
+	return  pPrevious;
 }
