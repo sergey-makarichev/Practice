@@ -25,6 +25,7 @@ public:
 	void InsertAfter(TKey, TNode<TKey, TData>*);
 	void InsertBefore(TKey, TNode<TKey, TData>*);
 	void Remove(TKey);
+	void Sort();
 
 	bool IsEmpty()const;
 	bool IsEnded()const;
@@ -35,6 +36,8 @@ public:
 	TNode<TKey, TData>* GetCurrent()const;
 	TNode<TKey, TData>* GetNext()const;
 	TNode<TKey, TData>* GetPrev()const;
+
+	friend class Polinom;
 };
 
 template<typename TKey, typename TData>
@@ -110,13 +113,54 @@ TList<TKey, TData> ::~TList()
 		delete pFirst;
 		pFirst = pNext;
 	}
+	pCurrent = nullptr;
+	pPrevious = nullptr;
+	pNext = nullptr;
+}
+
+template<typename TKey, typename TData>
+void TList<TKey, TData> ::Sort()
+{
+	if (pFirst == nullptr)
+		return;
+	if (pFirst->pNext == nullptr)
+		return;
+	TNode<TKey, TData>* a, *b, *rev, *prev_a;
+	for (bool ListDone = true; ListDone;)
+	{
+		ListDone = false;
+		a = pFirst;
+		b = pFirst->pNext;
+		prev_a = a;
+		while (b != nullptr)
+		{
+			if (a->key < b->key)
+			{
+				if (prev_a = a)
+					pFirst = b;
+				else
+					prev_a->pNext = b;
+				a->pNext = b->pNext;
+				b->pNext = a;
+				rev = a;
+				a = b;
+				b = rev;
+				ListDone = true;
+			}
+			prev_a = a;
+			a = a->pNext;
+			b = b->pNext;
+		}
+
+	}
+	Reset();
 }
 
 template<typename TKey, typename TData>
 TNode<TKey, TData>* TList<TKey, TData> ::Search(TKey key)
 {
 	if (pFirst == nullptr)
-		throw"Error";
+		throw"list is empty";
 	TNode<TKey, TData>* tmp = pFirst;
 	while ((tmp != nullptr) && (tmp->key != key))
 		tmp = tmp->pNext; // нужна ли проверка на ненайденный ключ

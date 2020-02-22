@@ -7,7 +7,7 @@
 using namespace std;
 
 template<>
-class TList<int, float>
+class TList<int, float> //delete
 {
 private:
 	TNode<int, float>* pFirst;

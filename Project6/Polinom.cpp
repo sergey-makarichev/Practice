@@ -15,7 +15,7 @@ Polinom::Polinom(TList<int, float>* list)
 		list->Next();
 	}
 	monoms = new TList<int, float>(*list);
-	SortMonoms();
+	SortMonoms(); // подобные
 }
 
 Polinom::Polinom(const Polinom& list)
@@ -254,7 +254,7 @@ Polinom Polinom::operator+(const Polinom& polynom)
 	polynom.monoms->Reset();
 	while (!monoms->IsEnded() && !polynom.monoms->IsEnded())
 	{
-		if (monoms->GetCurrent()->key > polynom.monoms->GetCurrent()->key)
+		if (monoms->GetCurrent()->key > polynom.monoms->GetCurrent()->key)// visa versa
 		{
 			sum.monoms->InsertEnd(monoms->GetCurrent());
 			monoms->Next();
@@ -272,27 +272,21 @@ Polinom Polinom::operator+(const Polinom& polynom)
 			monoms->Next();
 		}
 	}
-	if (monoms->IsEnded())
+	while (!polynom.monoms->IsEnded())
 	{
-		while (!polynom.monoms->IsEnded())
-		{
-			sum.monoms->InsertEnd(monoms->GetCurrent());
-			monoms->Next();
-		}
+		sum.monoms->InsertEnd(monoms->GetCurrent());
+		monoms->Next();
 	}
-	else
+	while (!monoms->IsEnded())
 	{
-		while (!monoms->IsEnded())
-		{
-			sum.monoms->InsertEnd(polynom.monoms->GetCurrent());
-			polynom.monoms->Next();
-		}
+		sum.monoms->InsertEnd(polynom.monoms->GetCurrent());
+		polynom.monoms->Next();
 	}
 	sum.monoms->Reset();
 	return sum;
 }
 
-Polinom Polinom::operator-()
+Polinom Polinom::operator-() const
 {
 	Polinom tmp(*this);
 	while (!tmp.monoms->IsEnded())
@@ -306,14 +300,12 @@ Polinom Polinom::operator-()
 
 Polinom Polinom::operator-(const Polinom& polynom)
 {
-	Polinom minus(polynom);
-	minus = -minus;
-	return *this + minus;
+	return *this + (-polynom);
 }
 
 const Polinom Polinom::operator=(const Polinom& polynom)
 {
-	if (this == &polynom)
+	if (*this == polynom) // ==
 		return *this;
 	if (!monoms->IsEmpty())
 		delete monoms;
