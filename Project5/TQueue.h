@@ -20,6 +20,10 @@ struct TPriorityQueueElem
 	{
 		return priority > e.priority;
 	}
+	bool operator == (const TPriorityQueueElem& e) const
+	{
+		return priority == e.priority;
+	}
 };
 
 TPriorityQueueElem::TPriorityQueueElem()
@@ -53,8 +57,6 @@ public:
 	bool IsFull()const;
 	void Push(TElemType q);
 	TElemType Pop();
-	friend ostream& operator<< (ostream& out, const TQueue& q);
-	friend istream& operator>> (istream& in, TQueue& q);
 };
 
 template<class TElemType>

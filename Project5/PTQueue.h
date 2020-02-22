@@ -13,15 +13,12 @@ private:
 	TPriorityQueueElem* elems;
 public:
 	TQueue(int size = 10);
-	TQueue(const TQueue& q);
+	TQueue(const TQueue<TPriorityQueueElem>& q);
 	~TQueue();
 	bool IsEmpty()const;
 	bool IsFull()const;
 	void Push(TPriorityQueueElem q);
 	TPriorityQueueElem Pop();
-	void sort();
-	friend ostream& operator<< (ostream& out, const TQueue& q);
-	friend istream& operator>> (istream& in, TQueue& q);
 };
 
 TQueue<TPriorityQueueElem>::TQueue(int size)
@@ -33,7 +30,7 @@ TQueue<TPriorityQueueElem>::TQueue(int size)
 	this->count = 0;
 }
 
-TQueue<TPriorityQueueElem>::TQueue(const TQueue& q)
+TQueue<TPriorityQueueElem>::TQueue(const TQueue<TPriorityQueueElem>& q)
 {
 	if(q.size <= 0)
 		throw M_Exeption("wrong size");
@@ -42,13 +39,8 @@ TQueue<TPriorityQueueElem>::TQueue(const TQueue& q)
 	this->elems = new TPriorityQueueElem[q.size];
 	if (q.IsEmpty())
 		return;
-	int i = 0;
-	while (i != count-1)
-	{
-		elems[i] = q.elems[i];
-		i++;
-	}
-	sort();
+	for (int i = 0; i < q.count; i++)
+		elems[i] = q[i];
 }
 
 TQueue<TPriorityQueueElem>::~TQueue()
@@ -71,7 +63,23 @@ void TQueue<TPriorityQueueElem>::Push(TPriorityQueueElem q)
 	if (IsFull())
 		throw M_Exeption("queue is full");
 	bool flag = false;
-    for (int i = 0; i < count; i++)
+	int mid, s_ind;
+	int i1 = 0;
+	int i2 = count - 1;
+	while (i1 <= i2)
+	{
+		mid = (i1 + i2) / 2;
+		if (elems[mid] == q)
+		{ 
+			s_ind = mid - 1;
+			break;
+		}
+		else if (elems[mid] < q)
+			i1 = mid + 1;
+		else
+			i2 = mid - 1;
+	}
+    for (int i = 0; i < count; i++)//binary search
     {
         if (q < elems[i])
         {
@@ -99,22 +107,6 @@ TPriorityQueueElem TQueue<TPriorityQueueElem>::Pop()
 	return p;
 }
 
-void TQueue<TPriorityQueueElem>::sort()
-{
-	if (count == 1)
-		return;
-	int j;
-	for (int i = 1; i < count; i++)
-	{
-		TPriorityQueueElem tmp = elems[i];
-		j = i - 1;
-		while (j >= 0 && elems[j] > tmp)
-		{
-			elems[j + 1] = elems[j];
-			elems[j] = tmp;
-			j--;
-		}
-	}
-}
+
 
 
