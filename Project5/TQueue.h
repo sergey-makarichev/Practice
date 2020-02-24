@@ -18,12 +18,13 @@ struct TPriorityQueueElem
 	}
 	bool operator < (const TPriorityQueueElem& e) const
 	{
-		return priority > e.priority;
+		return priority < e.priority;
 	}
 	bool operator == (const TPriorityQueueElem& e) const
 	{
 		return priority == e.priority;
 	}
+	friend std::ostream& operator<<(std::ostream& out, const TPriorityQueueElem q);
 };
 
 TPriorityQueueElem::TPriorityQueueElem()
@@ -38,6 +39,13 @@ TPriorityQueueElem::TPriorityQueueElem(int priority, float elem)
 		throw M_Exeption("wrong priority");
 	this->priority = priority;
 	this->elem = elem;
+}
+
+std::ostream& operator<<(std::ostream& out, const TPriorityQueueElem q)
+{
+	out << q.elem << std::endl;
+	out << std::endl;
+	return out;
 }
 
 template<class TElemType>
@@ -126,15 +134,3 @@ TElemType TQueue<TElemType>::Pop()
 	(++hi) % size;
 	return p;
 }
-
-/*template<class TElemType>
-ostream& operator<< (ostream& out, const TQueue& q)
-{
-	if (q.IsEmpty())
-		throw M_Exeption("queue is empty");
-	for (int i = q.hi; i <= q.li; (++i) % q.size)
-	{
-		out << q.elems[i] << "  ";
-	}
-	return out;
-}*/

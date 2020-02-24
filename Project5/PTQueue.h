@@ -32,15 +32,13 @@ TQueue<TPriorityQueueElem>::TQueue(int size)
 
 TQueue<TPriorityQueueElem>::TQueue(const TQueue<TPriorityQueueElem>& q)
 {
-	if(q.size <= 0)
-		throw M_Exeption("wrong size");
 	size = q.size;
 	count = q.count;
 	this->elems = new TPriorityQueueElem[q.size];
 	if (q.IsEmpty())
 		return;
 	for (int i = 0; i < q.count; i++)
-		elems[i] = q[i];
+		elems[i] = q.elems[i];
 }
 
 TQueue<TPriorityQueueElem>::~TQueue()
@@ -62,39 +60,40 @@ void TQueue<TPriorityQueueElem>::Push(TPriorityQueueElem q)
 {
 	if (IsFull())
 		throw M_Exeption("queue is full");
-	bool flag = false;
-	int mid, s_ind;
+	if (IsEmpty())
+	{
+		elems[count] = q;
+		count++;
+		return;
+	}
+	int mid = 0;
 	int i1 = 0;
 	int i2 = count - 1;
 	while (i1 <= i2)
 	{
 		mid = (i1 + i2) / 2;
 		if (elems[mid] == q)
-		{ 
-			s_ind = mid - 1;
-			break;
-		}
+			i1 = i2 + 1;
 		else if (elems[mid] < q)
 			i1 = mid + 1;
-		else
+		else 
 			i2 = mid - 1;
 	}
-    for (int i = 0; i < count; i++)//binary search
-    {
-        if (q < elems[i])
-        {
-			count++;
-            for (int j = count; j > i; j--)
-                elems[j] = elems[j - 1];
-            flag = true;
-            elems[i] = q;
-            return;
-        }
-    }
-	if (!flag)
+	if (i1 > mid)
 	{
+		for (int j = count; j > mid; j--)
+			elems[j] = elems[j - 1];
+		elems[mid + 1] = q;
 		count++;
-		elems[count - 1] = q;
+		return;
+	}
+	else if (i2 <= mid)
+	{
+		for (int j = count; j > mid - 1; j--)
+			elems[j] = elems[j - 1];
+		elems[mid] = q;
+		count++;
+		return;
 	}
 }
 
@@ -102,8 +101,8 @@ TPriorityQueueElem TQueue<TPriorityQueueElem>::Pop()
 {
 	if (IsEmpty())
 		throw M_Exeption("queue is empty");
-	count--;
 	TPriorityQueueElem p = elems[count - 1];
+	count--;
 	return p;
 }
 
