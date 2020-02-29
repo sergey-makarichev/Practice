@@ -79,22 +79,11 @@ void TQueue<TPriorityQueueElem>::Push(TPriorityQueueElem q)
 		else 
 			i2 = mid - 1;
 	}
-	if (i1 > mid)
-	{
-		for (int j = count; j > mid; j--)
-			elems[j] = elems[j - 1];
-		elems[mid + 1] = q;
-		count++;
-		return;
-	}
-	else if (i2 <= mid)
-	{
-		for (int j = count; j > mid - 1; j--)
-			elems[j] = elems[j - 1];
-		elems[mid] = q;
-		count++;
-		return;
-	}
+
+	for (int j = count; j > i1; j--)
+		elems[j] = elems[j - 1];
+	elems[i1] = q;
+	count++;
 }
 
 TPriorityQueueElem TQueue<TPriorityQueueElem>::Pop()
