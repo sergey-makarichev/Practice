@@ -1,10 +1,12 @@
-#pragma once
+#ifndef TLIST_H    
+#define TLIST_H 
 #include<iostream>
 #include "TNode.h"
+#include"Exception.h"
 
 using namespace std;
 
-template<typename TKey, typename TData>
+template<class TKey, class TData>
 class TList
 {
 private:
@@ -12,20 +14,21 @@ private:
 	TNode<TKey, TData>* pCurrent;
 	TNode<TKey, TData>* pPrevious;
 	TNode<TKey, TData>* pNext;
+	void Sort();
+	void BringingSimilar();
 public:
 	TList();
 	TList(const TList&);
-	TList(TNode<TKey, TData>*);
+	TList(const TNode<TKey, TData>*);
 	~TList();
 	TNode<TKey, TData>* Search(TKey);
-	void InsertBegin(TKey, TData*);
+	void InsertBegin(TKey, TData);
 	void InsertBegin(TNode<TKey, TData>*);
-	void InsertEnd(TKey, TData*);
+	void InsertEnd(TKey, TData);
 	void InsertEnd(TNode<TKey, TData>*);
 	void InsertAfter(TKey, TNode<TKey, TData>*);
 	void InsertBefore(TKey, TNode<TKey, TData>*);
 	void Remove(TKey);
-	void Sort();
 
 	bool IsEmpty()const;
 	bool IsEnded()const;
@@ -37,10 +40,21 @@ public:
 	TNode<TKey, TData>* GetNext()const;
 	TNode<TKey, TData>* GetPrev()const;
 
+	friend ostream& operator <<(std::ostream& out, const TList<TKey, TData> node)
+	{
+		TNode<TKey, TData>* tmp = node.pFirst;
+		while (tmp != nullptr)
+		{
+			out << "Key = "<< tmp->key << endl;
+			tmp = tmp->pNext;
+		}
+		return out;
+	}
+
 	friend class Polinom;
 };
 
-template<typename TKey, typename TData>
+template<class TKey, class TData>
 TList<TKey, TData> ::TList()
 {
 	pFirst = nullptr;
@@ -49,8 +63,8 @@ TList<TKey, TData> ::TList()
 	pNext = nullptr;
 }
 
-template<typename TKey, typename TData>
-TList<TKey, TData> ::TList(TNode<TKey, TData>* first) // проход до конца списка от node
+template<class TKey, class TData>
+TList<TKey, TData> ::TList(const TNode<TKey, TData>* first) // проход до конца списка от node
 {
 	pPrevious = nullptr;
 	pNext = nullptr;
@@ -76,7 +90,7 @@ TList<TKey, TData> ::TList(TNode<TKey, TData>* first) // проход до конца списка 
 	}
 }
 
-template<typename TKey, typename TData>
+template<class TKey, class TData>
 TList<TKey, TData> ::TList(const TList& list)
 {
 	if (list.pFirst == nullptr)
@@ -88,7 +102,7 @@ TList<TKey, TData> ::TList(const TList& list)
 	}
 	else
 	{
-		pFirst = new TNode<TKey, TData>(*list.pFirst);//Инициализация значения, находящегося по адресу указателя
+		pFirst = new TNode<TKey, TData>(*list.pFirst);
 		pPrevious = nullptr;
 		pCurrent = pFirst;
 		pNext = pFirst->pNext;
@@ -104,7 +118,7 @@ TList<TKey, TData> ::TList(const TList& list)
 
 }
 
-template<typename TKey, typename TData>
+template<class TKey, class TData>
 TList<TKey, TData> ::~TList()
 {
 	while (pFirst != nullptr)
@@ -118,7 +132,7 @@ TList<TKey, TData> ::~TList()
 	pNext = nullptr;
 }
 
-template<typename TKey, typename TData>
+template<class TKey, class TData>
 void TList<TKey, TData> ::Sort()
 {
 	if (pFirst == nullptr)
@@ -156,21 +170,45 @@ void TList<TKey, TData> ::Sort()
 	Reset();
 }
 
-template<typename TKey, typename TData>
+template<class TKey, class TData>
+void TList<TKey, TData>::BringingSimilar()
+{
+	Reset();
+	TNode<TKey, TData>* tmp = pNext;
+	while (!IsEnded())
+	{
+		while (tmp->pNext->key != pCurrent->key)
+		{
+			if (pCurrent == tmp->pNext)
+			{
+				Next();
+				continue;
+			}
+			pCurrent->pData += tmp->pNext->pData;
+			TNode<TKey, TData>* node = tmp->pNext;
+			tmp->pNext = tmp->pNext->pNext;
+			delete node;
+			Next();
+		}
+	}
+}
+
+
+template<class TKey, class TData>
 TNode<TKey, TData>* TList<TKey, TData> ::Search(TKey key)
 {
 	if (pFirst == nullptr)
-		throw"list is empty";
+		throw M_Exeption("list is empty");
 	TNode<TKey, TData>* tmp = pFirst;
 	while ((tmp != nullptr) && (tmp->key != key))
-		tmp = tmp->pNext; // нужна ли проверка на ненайденный ключ
+		tmp = tmp->pNext; 
 	if (tmp == nullptr)
 		cout << "there is no such key";
 	return tmp;
 }
 
-template<typename TKey, typename TData>
-void TList<TKey, TData> ::InsertBegin(TKey NewKey, TData* NewData)
+template<class TKey, class TData>
+void TList<TKey, TData> ::InsertBegin(TKey NewKey, TData NewData)
 {
 	TNode<TKey, TData>* tmp = new TNode<TKey, TData>(NewKey, NewData, pFirst);
 	if (pCurrent == pFirst)
@@ -179,14 +217,14 @@ void TList<TKey, TData> ::InsertBegin(TKey NewKey, TData* NewData)
 	return;
 }
 
-template<typename TKey, typename TData>
+template<class TKey, class TData>
 void TList<TKey, TData> ::InsertBegin(TNode<TKey, TData>* node)
 {
 	InsertBegin(node->key, node->pData);
 }
 
-template<typename TKey, typename TData>
-void TList<TKey, TData> ::InsertEnd(TKey NewKey, TData* NewData)
+template<class TKey, class TData>
+void TList<TKey, TData> ::InsertEnd(TKey NewKey, TData NewData)
 {
 	if (pFirst == nullptr)//insert begin
 	{
@@ -204,17 +242,17 @@ void TList<TKey, TData> ::InsertEnd(TKey NewKey, TData* NewData)
 	return;
 }
 
-template<typename TKey, typename TData>
+template<class TKey, class TData>
 void TList<TKey, TData> ::InsertEnd(TNode<TKey, TData>* node)
 {
 	InsertEnd(node->key, node->pData);
 }
 
-template<typename TKey, typename TData>
+template<class TKey, class TData>
 void TList<TKey, TData> ::InsertAfter(TKey SearchKey, TNode<TKey, TData>* node)
 {
 	if (pFirst == nullptr)
-		throw "empty";
+		throw M_Exeption("list is empty");
 	TNode<TKey, TData>* tmp = pFirst;
 	while (tmp != nullptr && tmp->key != SearchKey)
 		tmp = tmp->pNext;
@@ -232,11 +270,11 @@ void TList<TKey, TData> ::InsertAfter(TKey SearchKey, TNode<TKey, TData>* node)
 	return;
 }
 
-template<typename TKey, typename TData>
+template<class TKey, class TData>
 void TList<TKey, TData> ::InsertBefore(TKey SearchKey, TNode<TKey, TData>* node)
 {
 	if (pFirst == nullptr)
-		throw "empty";
+		throw M_Exeption("list is empty");
 	if (pFirst->key == SearchKey)// insert begin
 	{
 		InsertBegin(node->key, node->pData);
@@ -258,20 +296,21 @@ void TList<TKey, TData> ::InsertBefore(TKey SearchKey, TNode<TKey, TData>* node)
 	tmp->pNext = NewNode;// navigation
 }
 
-template<typename TKey, typename TData>
+template<class TKey, class TData>
 void TList<TKey, TData> ::Remove(TKey SearchKey)
 {
 	if (pFirst == nullptr)
-		throw "list is empty"; 
-	TNode<TKey, TData>* tmp = pFirst;
+		throw M_Exeption("list is empty");
 	if (pFirst->key == SearchKey)
 	{
+		TNode<TKey, TData>* tmp = pFirst;
 		pFirst = pFirst->pNext;
 		if (pCurrent == pFirst)
 			pPrevious = nullptr;
 		delete tmp;// navigation
 		Reset();
 	}
+	TNode<TKey, TData>* tmp = pFirst;
 	while (tmp != nullptr && tmp->pNext->key != SearchKey)
 		tmp = tmp->pNext;
 	if (tmp == nullptr)
@@ -290,59 +329,60 @@ void TList<TKey, TData> ::Remove(TKey SearchKey)
 	delete node;// navigation
 }
 
-template<typename TKey, typename TData>
+template<class TKey, class TData>
 bool TList<TKey, TData> ::IsEmpty()const
 {
 	return(pFirst == nullptr);
 }
 
-template<typename TKey, typename TData>
+template<class TKey, class TData>
 bool TList<TKey, TData> ::IsEnded()const
 {
 	return(pCurrent == nullptr);
 }
 
-template<typename TKey, typename TData>
+template<class TKey, class TData>
 void TList<TKey, TData> ::Reset()
 {
 	if (pFirst == nullptr)
-		throw "list is empty";//
+		throw M_Exeption("list is empty");//
 	pCurrent = pFirst;
 	pPrevious = nullptr;
 	pNext = pCurrent->pNext;
 }
 
-template<typename TKey, typename TData>
+template<class TKey, class TData>
 void TList<TKey, TData> ::Next()
 {
 	if (IsEnded())
-		throw"end of list";
+		throw M_Exeption("end of list");
 	pPrevious = pCurrent;
 	pCurrent = pNext;
 	if (pNext != nullptr)
 		pNext = pNext->pNext;
 }
 
-template<typename TKey, typename TData>
+template<class TKey, class TData>
 TNode<TKey, TData>* TList<TKey, TData> ::GetFirst()const
 {
 	return pFirst;
 }
 
-template<typename TKey, typename TData>
+template<class TKey, class TData>
 TNode<TKey, TData>* TList<TKey, TData> ::GetCurrent()const
 {
 	return pCurrent;
 }
 
-template<typename TKey, typename TData>
+template<class TKey, class TData>
 TNode<TKey, TData>* TList<TKey, TData> ::GetNext()const
 {
 	return pNext;
 }
 
-template<typename TKey, typename TData>
+template<class TKey, class TData>
 TNode<TKey, TData>* TList<TKey, TData> ::GetPrev()const
 {
 	return  pPrevious;
 }
+#endif 
