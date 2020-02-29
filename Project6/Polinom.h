@@ -23,10 +23,11 @@ public:
 
 	Polinom operator + (const Polinom& polynom);
 	Polinom operator - () const;
-	Polinom operator - (const Polinom& polynom);//*
+	Polinom operator - (const Polinom& polynom);
 	Polinom operator * (const Polinom& polynom);
+	Polinom operator *(const TNode<int, float>& monom);
 	bool operator ==(const Polinom& polynom)const;
-	const Polinom operator= (const Polinom& polynom);
+	const Polinom& operator= (const Polinom& polynom);
 	friend ostream& operator <<(std::ostream& out, const Polinom& pol);
 };
 
@@ -377,7 +378,7 @@ bool Polinom::operator==(const Polinom& polynom) const
 		return false;
 }
 
-const Polinom Polinom::operator=(const Polinom& polynom)
+const Polinom& Polinom::operator=(const Polinom& polynom)
 {
 	if (*this == polynom) // ==
 		return *this;
@@ -406,9 +407,23 @@ Polinom Polinom::operator*(const Polinom& polynom)
 		monoms->Next();
 		polynom.monoms->Reset();
 	}
-	product.SimilarMonoms();
-	product.SortMonoms();
+	/*product.SimilarMonoms();
+	product.SortMonoms();*/
 	return product;
+}
+
+Polinom Polinom::operator*(const TNode<int, float>& monom)
+{
+	if (monom.pData == 0)
+		return monoms;
+	Polinom res;
+	TNode<int, float>* tmp = new TNode<int, float>(monom);
+	while (!monoms->IsEnded())
+	{
+		res.monoms->InsertEnd(*tmp * *monoms->GetCurrent());
+		monoms->Next();
+	}
+	return res;
 }
 
 ostream& operator <<(std::ostream& out, const Polinom& pol)

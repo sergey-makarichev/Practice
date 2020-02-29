@@ -1,18 +1,22 @@
 #include "Polinom.h"
-//#include "TNode.h"
 #include <string>
 #include <stdlib.h> 
 #include"Exception.h"
 using namespace std;
 
+
+//-2+5x^2y+z-yz+x^2yz
+//2 + y - 2z + x ^ 2y
 int main()
 {
 	try
 	{
-		string s;
-		std::getline(std::cin, s);
-		Polinom pol(s);
-		cout << pol;
+		string s1, s2;
+		std::getline(std::cin, s1);
+		Polinom pol1(s1);
+		std::getline(std::cin, s2);
+		Polinom pol2(s2);
+		cout << pol1 + pol2;
 	}
 	catch (const M_Exeption & exception)
 	{
