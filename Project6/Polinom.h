@@ -21,11 +21,13 @@ public:
 	Polinom(const Polinom& list);
 	~Polinom();
 
-	Polinom operator + (const Polinom& polynom);
+	Polinom operator + (const Polinom& polynom)const;
+	Polinom operator + (const TNode<int, float>& monom);
 	Polinom operator - () const;
 	Polinom operator - (const Polinom& polynom);
-	Polinom operator * (const Polinom& polynom);
-	Polinom operator *(const TNode<int, float>& monom);
+	Polinom operator - (const TNode<int, float>& monom);
+	Polinom operator * (const Polinom& polynom)const;
+	Polinom operator *(const TNode<int, float>& monom)const;
 	bool operator ==(const Polinom& polynom)const;
 	const Polinom& operator= (const Polinom& polynom);
 	friend ostream& operator <<(std::ostream& out, const Polinom& pol);
@@ -66,63 +68,67 @@ void Polinom::SortMonoms()
 		return;
 	if (monoms->GetFirst()->pNext == nullptr)
 		return;
-	TNode<int, float>* a, * b, * rev, * prev_a;
-	for (bool ListDone = true; ListDone;)
-	{
-		ListDone = false;
-		a = monoms->GetFirst();
-		b = monoms->GetFirst()->pNext;
-		prev_a = a;
-		while (b != nullptr)
-		{
-			if (a->key < b->key)
-			{
-				if (prev_a = a)
-					monoms->pFirst = b;
-				else
-					prev_a->pNext = b;
-				a->pNext = b->pNext;
-				b->pNext = a;
-				rev = a;
-				a = b;
-				b = rev;
-				ListDone = true;
-			}
-			prev_a = a;
-			a = a->pNext;
+	TNode<int,float>* a, * b, * p, * h = nullptr;
+	for (TNode<int, float>* i = monoms->GetFirst(); i != nullptr; ) {
+		a = i;
+		i = i->pNext;
+		b = h;
+		for (p = nullptr; (b != nullptr) && (a->key < b->key); ) {
+			p = b;
 			b = b->pNext;
 		}
 
+		if (p == nullptr) {
+			a->pNext = h;
+			h = a;
+		}
+		else {
+			a->pNext = b;
+			p->pNext = a;
+		}
 	}
+	if (h != nullptr)
+		monoms->pFirst = h;
 	monoms->Reset();
 }
 
 void Polinom::SimilarMonoms()
 {
 	monoms->Reset();
-	TNode<int, float>* tmp = monoms->GetNext();
 	while (!monoms->IsEnded())
 	{
-		while (tmp->pNext->key != monoms->GetCurrent()->key && tmp != nullptr)
+		TNode<int, float>* tmp = monoms->GetNext();
+		TNode<int, float>* prev_tmp = monoms->GetCurrent();
+		while (tmp != nullptr)
 		{
-			if (monoms->GetCurrent()->key == tmp->pNext->key && monoms->GetCurrent()->pData == -tmp->pNext->pData)
+			if (monoms->GetCurrent()->key == tmp->key)
 			{
-				monoms->Remove(monoms->GetCurrent()->key);
-				TNode<int, float>* node = tmp->pNext;
-				tmp->pNext = tmp->pNext->pNext;
-				delete node;
-				tmp = tmp->pNext;
-				continue;
+				if (monoms->GetCurrent()->pData == -tmp->pData)
+				{
+					monoms->Remove(tmp->key);
+					monoms->Remove(tmp->key);
+					tmp =monoms->GetNext();
+					prev_tmp = monoms->GetCurrent();
+					continue;
+				}
+				else 
+				{
+					monoms->GetCurrent()->pData += tmp->pData;
+					TNode<int, float>* node = tmp;
+					prev_tmp->pNext = tmp->pNext;
+					if (monoms->GetNext() == node)
+						monoms->pNext = node->pNext;
+					delete node;
+					tmp = prev_tmp->pNext;
+					continue;
+				}
 			}
-			monoms->GetCurrent()->pData += tmp->pNext->pData;
-			TNode<int, float>* node = tmp->pNext;
-			tmp->pNext = tmp->pNext->pNext;
-			delete node;
 			tmp = tmp->pNext;
+			prev_tmp = prev_tmp->pNext;
 		}
 		monoms->Next();
-		tmp = monoms->GetNext();
 	}
+	monoms->Reset();
 }
 
 Polinom::Polinom(const string& polinom)
@@ -158,7 +164,7 @@ Polinom::Polinom(const string& polinom)
 						i++;
 					}
 				}
-				coeff = (float)(atof(StrCoeff.c_str()));
+				coeff *= (float)(atof(StrCoeff.c_str()));
 				continue;
 			}
 			if (str[i] == '^')
@@ -168,25 +174,18 @@ Polinom::Polinom(const string& polinom)
 			}
 			if (str[i] == 'x')
 			{
-				if ((i + 1) != str.length())
-				{
-					is_x = true;
-					is_y = false;
-					is_z = false;
-					i++;
-					continue;
-				}
-				else
-				{
-					is_x = true;
-					is_y = false;
-					is_z = false;
-				}
+
+				is_x = true;
+				is_y = false;
+				is_z = false;
+				i++;
+
 			}
-			if (is_x && (str[i] == 'y' || str[i] == 'z' || str[i] == ' '))
+			if (is_x && (str[i] == 'y' || str[i] == 'z' || str[i] == ' ' || str[i] == '+' || str[i] == '-'))
 			{
 				deg_x = 1;
 				is_x = false;
+				continue;
 			}
 			if (is_x && isdigit(str[i]))
 			{
@@ -197,6 +196,12 @@ Polinom::Polinom(const string& polinom)
 				i++;
 				continue;
 			}
+			if (is_x && (i == str.length()))
+			{
+				deg_x = 1;
+				is_x = false;
+				continue;
+			}
 			if (is_x && (i + 1 == str.length()))
 			{
 				deg_x = 1;
@@ -205,33 +210,30 @@ Polinom::Polinom(const string& polinom)
 			}
 			if (str[i] == 'y')
 			{
-				if ((i + 1) != str.length())
-				{
-					is_x = false;
-					is_y = true;
-					is_z = false;
-					i++;
-					continue;
-				}
-				else
-				{
-					is_x = false;
-					is_y = true;
-					is_z = false;
-				}
+				is_x = false;
+				is_y = true;
+				is_z = false;
+				i++;
 			}
-			if (is_y && (str[i] == 'x' || str[i] == 'z' || str[i] == ' '))
+			if (is_y && (str[i] == 'x' || str[i] == 'z' || str[i] == ' ' || str[i] == '+' || str[i] == '-'))
 			{
 				deg_y = 1;
 				is_y = false;
+				continue;
 			}
-			if (is_x && isdigit(str[i]))
+			if (is_y && isdigit(str[i]))
 			{
 				if (isdigit(str[i + 1]))
 					throw M_Exeption("degree > 9");
 				deg_y = (int)str[i] - 48;
 				is_y = false;
 				i++;
+				continue;
+			}
+			if (is_y && i == str.length())
+			{
+				deg_y = 1;
+				is_y = false;
 				continue;
 			}
 			if (is_y && i + 1 == str.length())
@@ -243,25 +245,16 @@ Polinom::Polinom(const string& polinom)
 
 			if (str[i] == 'z')
 			{
-				if ((i + 1) != str.length())
-				{
-					is_x = false;
-					is_y = false;
-					is_z = true;
-					i++;
-					continue;
-				}
-				else
-				{
-					is_x = false;
-					is_y = false;
-					is_z = true;
-				}
+				is_x = false;
+				is_y = false;
+				is_z = true;
+				i++;
 			}
-			if (is_z && (str[i] == 'x' || str[i] == 'y' || str[i] == ' '))
+			if (is_z && (str[i] == 'x' || str[i] == 'y' || str[i] == ' ' || str[i] == '+' || str[i] == '-'))
 			{
 				deg_z = 1;
 				is_z = false;
+				continue;
 			}
 			if (is_z && isdigit(str[i]))
 			{
@@ -270,6 +263,12 @@ Polinom::Polinom(const string& polinom)
 				deg_z = (int)str[i] - 48;
 				is_z = false;
 				i++;
+				continue;
+			}
+			if (is_z && i == str.length())
+			{
+				deg_z = 1;
+				is_z = false;
 				continue;
 			}
 			if (is_z && i + 1 == str.length())
@@ -300,67 +299,78 @@ Polinom::Polinom(const string& polinom)
 		deg_x = deg_y = deg_z = 0;
 		coeff = 1;
 	}
+	SimilarMonoms();
 	SortMonoms();
 }
 
-Polinom Polinom::operator+(const Polinom& polynom)
+Polinom Polinom::operator+(const Polinom& polynom)const
 {
 	if (monoms->IsEmpty())
 		return polynom;
 	if (polynom.monoms->IsEmpty())
 		return *this;
 	Polinom sum;
-	monoms->Reset();
-	polynom.monoms->Reset();
-	while (!monoms->IsEnded() && !polynom.monoms->IsEnded())
+	Polinom pol1(*this);
+	Polinom pol2(polynom);
+	pol1.monoms->Reset();
+	pol2.monoms->Reset();
+	while (!pol1.monoms->IsEnded() && !pol2.monoms->IsEnded())
 	{
-		if (monoms->GetCurrent() > polynom.monoms->GetCurrent())
+		TNode<int, float> m1(pol1.monoms->GetCurrent()->key, pol1.monoms->GetCurrent()->pData);
+		TNode<int, float> m2(pol2.monoms->GetCurrent()->key, pol2.monoms->GetCurrent()->pData);
+		if (m1 > m2)
 		{
-			sum.monoms->InsertEnd(monoms->GetCurrent());
-			monoms->Next();
+			sum = sum + m1;
+			pol1.monoms->Next();
 		}
-		else if (monoms->GetCurrent() < polynom.monoms->GetCurrent())
+		else if (m1 < m2)
 		{
-			sum.monoms->InsertEnd(polynom.monoms->GetCurrent());
-			polynom.monoms->Next();
+			sum = sum + m2;
+			pol2.monoms->Next();
 		}
-		else if (monoms->GetCurrent()->key == polynom.monoms->GetCurrent()->key)
+		else if (m1.key == m2.key)
 		{
-			if ((monoms->GetCurrent()->pData + polynom.monoms->GetCurrent()->pData) != 0)
-				sum.monoms->InsertEnd(monoms->GetCurrent()->key, polynom.monoms->GetCurrent()->pData + monoms->GetCurrent()->pData);
-			polynom.monoms->Next();
-			monoms->Next();
+			if (m1.pData + m2.pData != 0)
+			{
+				TNode<int, float> SumMon = m1 + m2;
+				sum = sum + SumMon;
+			}
+			pol2.monoms->Next();
+			pol1.monoms->Next();
 		}
 	}
-	while (!polynom.monoms->IsEnded())
+	while (!pol2.monoms->IsEnded())
 	{
-		sum.monoms->InsertEnd(monoms->GetCurrent());
-		monoms->Next();
+		TNode<int, float> m2(pol2.monoms->GetCurrent()->key, pol2.monoms->GetCurrent()->pData);
+		sum = sum + m2;
+		pol2.monoms->Next();
 	}
-	while (!monoms->IsEnded())
+	while (!pol1.monoms->IsEnded())
 	{
-		sum.monoms->InsertEnd(polynom.monoms->GetCurrent());
-		polynom.monoms->Next();
+		TNode<int, float> m1(pol1.monoms->GetCurrent()->key, pol1.monoms->GetCurrent()->pData);
+		sum = sum + m1;
+		pol1.monoms->Next();
 	}
 	sum.monoms->Reset();
 	return sum;
 }
 
+Polinom Polinom::operator-(const Polinom& polynom)
+{
+	return (Polinom(*this) + (-polynom));
+}
+
 Polinom Polinom::operator-() const
 {
 	Polinom tmp(*this);
+	tmp.monoms->Reset();
 	while (!tmp.monoms->IsEnded())
 	{
-		tmp.monoms->GetCurrent()->pData *= -1;
+		tmp.monoms->pCurrent->pData = -tmp.monoms->pCurrent->pData;
 		tmp.monoms->Next();
 	}
 	tmp.monoms->Reset();
 	return tmp;
-}
-
-Polinom Polinom::operator-(const Polinom& polynom)
-{
-	return *this + (-polynom);
 }
 
 bool Polinom::operator==(const Polinom& polynom) const
@@ -380,7 +390,7 @@ bool Polinom::operator==(const Polinom& polynom) const
 
 const Polinom& Polinom::operator=(const Polinom& polynom)
 {
-	if (*this == polynom) // ==
+	if (*this == polynom) 
 		return *this;
 	if (!monoms->IsEmpty())
 		delete monoms;
@@ -388,41 +398,81 @@ const Polinom& Polinom::operator=(const Polinom& polynom)
 	return *this;
 }
 
-Polinom Polinom::operator*(const Polinom& polynom)
+Polinom Polinom::operator+(const TNode<int, float>& monom)
+{
+	Polinom res;
+	bool FlagOfAddMonom = false;
+	monoms->Reset();
+	while (!monoms->IsEnded())
+	{
+		TNode<int, float> CurrentMon(monoms->GetCurrent()->key, monoms->GetCurrent()->pData);
+		if (CurrentMon > monom)
+			res.monoms->InsertEnd(&CurrentMon);
+		else if (CurrentMon.key == monom.key)
+		{
+			if (CurrentMon.pData + monom.pData != 0)
+				res.monoms->InsertEnd(CurrentMon.key, CurrentMon.pData + monom.pData);
+			FlagOfAddMonom = true;
+		}
+		else if(CurrentMon < monom)
+		{
+			if(FlagOfAddMonom)
+				res.monoms->InsertEnd(&CurrentMon);
+			else
+			{
+				if(monom.pData != 0)
+					res.monoms->InsertEnd(monom.key, monom.pData);
+				FlagOfAddMonom = true;
+				continue;
+			}
+		}
+		monoms->Next();
+	}
+	if(!FlagOfAddMonom)
+		res.monoms->InsertEnd(monom.key, monom.pData);
+	monoms->Reset();
+	return res;
+}
+
+Polinom Polinom::operator-(const TNode<int, float>& monom)
+{
+	return(Polinom(*this) + TNode<int, float>(monom.key, -monom.pData));
+}
+
+Polinom Polinom::operator*(const Polinom& polynom)const
 {
 	if (polynom.monoms->IsEmpty())
 		return *this;
-	monoms->Reset();
-	polynom.monoms->Reset();
 	Polinom product;
-	while (!monoms->IsEnded())
+	Polinom pol(polynom);
+	pol.monoms->Reset();
+	while (!pol.monoms->IsEnded())
 	{
-		while (!polynom.monoms->IsEnded())
-		{
-			TNode<int, float>* product1;
-			product1 = *monoms->GetCurrent() * *polynom.monoms->GetCurrent();
-			product.monoms->InsertEnd(product1);
-			polynom.monoms->Next();
-		}
-		monoms->Next();
-		polynom.monoms->Reset();
+		TNode<int, float> tmp1(pol.monoms->GetCurrent()->key, pol.monoms->GetCurrent()->pData);
+		Polinom tmp2(Polinom(*this) * tmp1);
+		product = product + tmp2;
+
+		pol.monoms->Next();
 	}
-	/*product.SimilarMonoms();
-	product.SortMonoms();*/
 	return product;
 }
 
-Polinom Polinom::operator*(const TNode<int, float>& monom)
+Polinom Polinom::operator*(const TNode<int, float>& monom)const
 {
-	if (monom.pData == 0)
-		return monoms;
 	Polinom res;
-	TNode<int, float>* tmp = new TNode<int, float>(monom);
-	while (!monoms->IsEnded())
+	Polinom pol(*this);
+	if (monom.pData == 0)
+		return res; 
+	pol.monoms->Reset();
+	while (!pol.monoms->IsEnded())
 	{
-		res.monoms->InsertEnd(*tmp * *monoms->GetCurrent());
-		monoms->Next();
+		TNode<int, float> tmp(pol.monoms->GetCurrent()->key, pol.monoms->GetCurrent()->pData);
+		tmp = tmp * monom;
+		if (tmp.pData != 0)
+			res = res + tmp;
+		pol.monoms->Next();
 	}
+	cout << endl;
 	return res;
 }
 
@@ -441,23 +491,27 @@ ostream& operator <<(std::ostream& out, const Polinom& pol)
 		}
 		else
 		{
-			if (pol.monoms->GetCurrent()->pData != 1)
+			if (pol.monoms->GetCurrent()->pData != 1 && pol.monoms->GetCurrent()->pData != -1)
 			{
 				if (pol.monoms->GetCurrent()->pData > 0)
 					out << "+" << pol.monoms->GetCurrent()->pData;
 				if (pol.monoms->GetCurrent()->pData < 0)
-					out << "-" << pol.monoms->GetCurrent()->pData;
+					out << pol.monoms->GetCurrent()->pData;
 			}
+			if (pol.monoms->GetCurrent()->pData == -1)
+				out << "-";
+			if (pol.monoms->GetCurrent()->pData == 1 && pol.monoms->GetCurrent() != pol.monoms->GetFirst())
+				out << "+";
 			if (deg_x > 0 && deg_x != 1)
 				out << "x^" << deg_x;
-			if (deg_y > 0 && deg_y != 1)
-				out << "y^" << deg_y;
-			if (deg_z > 0 && deg_z != 1)
-				out << "z^" << deg_z;
 			if (deg_x == 1)
 				out << "x";
+			if (deg_y > 0 && deg_y != 1)
+				out << "y^" << deg_y;
 			if (deg_y == 1)
 				out << "y";
+			if (deg_z > 0 && deg_z != 1)
+				out << "z^" << deg_z;
 			if (deg_z == 1)
 				out << "z";
 		}

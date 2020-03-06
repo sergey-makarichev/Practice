@@ -6,17 +6,45 @@ using namespace std;
 
 
 //-2+5x^2y+z-yz+x^2yz
-//2 + y - 2z + x ^ 2y
+//2+y-2z+x^2y
 int main()
 {
 	try
 	{
 		string s1, s2;
-		std::getline(std::cin, s1);
-		Polinom pol1(s1);
-		std::getline(std::cin, s2);
-		Polinom pol2(s2);
-		cout << pol1 + pol2;
+		int n = 1;
+		while (n!=0)
+		{
+			cout << "enter the first polynomial" << endl;
+			std::getline(std::cin, s1);
+			Polinom pol1(s1);
+			cout << "enter the second polynomial" << endl;
+			std::getline(std::cin, s2);
+			Polinom pol2(s2);
+			cout << "select the action you want to do" << endl;
+			cout << "1 - '+' " << endl << "2 - '-' " << endl << "3 - '*' " << endl << "0 - if you want to exit" << endl;
+			cin >> n;
+			switch (n)
+			{
+			case 1:
+			{
+				cout << pol1 + pol2 << endl;
+				break;
+			}
+			case 2:
+			{
+				cout << pol1 - pol2 << endl;
+				break;
+			}
+			case 3:
+			{
+				cout << pol1 * pol2 << endl;
+				break;
+			}
+			default:
+				cout << "incorrect input" << endl;
+			}
+		}
 	}
 	catch (const M_Exeption & exception)
 	{
@@ -24,29 +52,6 @@ int main()
 
 
 	}
-	/*TList<int, float> l;
-	TNode<int, float> k(2,5);
-	TNode<int, float> m(1, 6);
-	l.InsertBegin(3,4);
-	l.InsertBefore(3,&k);
-	l.InsertAfter(3, &m);
-	l.Sort();
-	cout << l;
-	string s;
-	float a = 1;
-	std::getline(std::cin, s);
-	int i = s[0] - 48;
-	cout << s.length() << endl;
-	cout << s[0] << endl;
-	if (!isdigit(s[0]))
-		cout << "1" << endl;
-	cout << i << endl;
-	if (s[0] > 2)
-	{
-		cout << "yes";
-	}
-	a = (atof(s.c_str()));
-	cout << a;*/
 	system ("pause");
 
 	return 0;

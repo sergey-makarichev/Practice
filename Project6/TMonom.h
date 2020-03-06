@@ -24,11 +24,15 @@ public:
 	{
 		pNext = nullptr;
 	}
-	TNode<int, float>* operator*(const TNode<int, float>&);
+	TNode<int, float> operator*(const TNode<int, float>&);
+	TNode<int, float> operator+(const TNode<int, float>&);
+	TNode<int, float> operator-(const TNode<int, float>&);
+	TNode<int, float>* operator-()const;
 	bool operator <(const TNode<int, float>&)const;
 	bool operator >(const TNode<int, float>&)const;
 	bool operator !=(const TNode<int, float>&)const;
 	bool operator ==(const TNode<int, float>&)const;
+	const TNode<int, float>& operator= (const TNode<int, float>& monom);
 };
 
 TNode<int, float> ::TNode(unsigned int deg_x, unsigned int deg_y, unsigned int deg_z, float coeff, TNode<int, float>* next)
@@ -60,7 +64,16 @@ bool TNode<int, float> ::operator !=(const TNode& OtherMonom)const
 	return(!(*this == OtherMonom));
 }
 
-TNode<int, float>* TNode<int, float>::operator*(const TNode<int, float>& monom)
+const TNode<int, float>& TNode<int, float> :: operator=(const TNode<int, float>& monom)
+{
+	if (*this == monom) 
+		return *this;
+	this->key = monom.key;
+	this->pData = monom.pData;
+	return *this;
+}
+
+TNode<int, float> TNode<int, float>::operator*(const TNode<int, float>& monom)
 {
 	int deg_x1 = this->key / 100;
 	int deg_y1 = (this->key - deg_x1 * 100) / 10;
@@ -70,9 +83,29 @@ TNode<int, float>* TNode<int, float>::operator*(const TNode<int, float>& monom)
 	int deg_z2 = monom.key - deg_x2 * 100 - deg_y2 * 10;
 	if(deg_z1 + deg_z2 > 9 || deg_y1 + deg_y2 > 9 || deg_x1 + deg_x2 > 9)
 		throw M_Exeption("invalid parameter");
-	TNode<int, float>* product = new TNode();
-	product->key = this->key + monom.key;
-	product->pData = this->pData * monom.pData;
+	TNode<int, float> product(this->key + monom.key, this->pData * monom.pData);
+	/*product->key = this->key + monom.key;
+	product->pData = this->pData * monom.pData;*/
 	return product;
+}
+
+TNode<int, float> TNode<int, float>::operator+(const TNode<int, float>& monom)
+{
+	if (this->key != monom.key)
+		throw M_Exeption("monoms have different degrees");
+	return TNode<int, float>(monom.key, this->pData + monom.pData);
+}
+
+TNode<int, float> TNode<int, float>::operator-(const TNode<int, float>& monom)
+{
+	if (this->key != monom.key)
+		throw M_Exeption("monoms have different degrees");
+	return TNode<int, float>(monom.key, this->pData - monom.pData);
+}
+TNode<int, float>* TNode<int, float>::operator-() const
+{
+	TNode<int, float>* tmp = new TNode<int,float>(*this);
+	tmp->pData = -1 * tmp->pData;
+	return tmp;
 }
 #endif 

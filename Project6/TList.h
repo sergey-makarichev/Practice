@@ -139,34 +139,28 @@ void TList<TKey, TData> ::Sort()
 		return;
 	if (pFirst->pNext == nullptr)
 		return;
-	TNode<TKey, TData>* a, *b, *rev, *prev_a;
-	for (bool ListDone = true; ListDone;)
+	TNode<TKey,TData>* a, * b, * p, * h = NULL;
+	for (TNode<TKey, TData>* i = pFirst; i != NULL; )
 	{
-		ListDone = false;
-		a = pFirst;
-		b = pFirst->pNext;
-		prev_a = a;
-		while (b != nullptr)
-		{
-			if (a->key < b->key)
-			{
-				if (prev_a = a)
-					pFirst = b;
-				else
-					prev_a->pNext = b;
-				a->pNext = b->pNext;
-				b->pNext = a;
-				rev = a;
-				a = b;
-				b = rev;
-				ListDone = true;
-			}
-			prev_a = a;
-			a = a->pNext;
+		a = i;
+		i = i->pNext;
+		b = h;
+		for (p = NULL; (b != NULL) && (a->key < b->key); ) {
+			p = b;
 			b = b->pNext;
 		}
 
+		if (p == NULL) {
+			a->pNext = h;
+			h = a;
+		}
+		else {
+			a->pNext = b;
+			p->pNext = a;
+		}
 	}
+	if (h != NULL)
+		pFirst = h;
 	Reset();
 }
 
@@ -309,6 +303,7 @@ void TList<TKey, TData> ::Remove(TKey SearchKey)
 			pPrevious = nullptr;
 		delete tmp;// navigation
 		Reset();
+		return;
 	}
 	TNode<TKey, TData>* tmp = pFirst;
 	while (tmp != nullptr && tmp->pNext->key != SearchKey)
@@ -345,7 +340,7 @@ template<class TKey, class TData>
 void TList<TKey, TData> ::Reset()
 {
 	if (pFirst == nullptr)
-		throw M_Exeption("list is empty");//
+		return;
 	pCurrent = pFirst;
 	pPrevious = nullptr;
 	pNext = pCurrent->pNext;
