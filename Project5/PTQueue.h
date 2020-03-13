@@ -2,13 +2,99 @@
 #include "TQueue.h"
 #include "Exception.h"
 
-class PTQueue : public TQueue
+using namespace std;
+
+template<>
+class TQueue<TPriorityQueueElem>
 {
 private:
-	int* prioritet;
+	int size;
+	int count;
+	TPriorityQueueElem* elems;
 public:
-	void Push(float q, int prioritet);
-	PTQueue(int size);
-	PTQueue(const PTQueue& q);
-	~PTQueue();
+	TQueue(int size = 10);
+	TQueue(const TQueue<TPriorityQueueElem>& q);
+	~TQueue();
+	bool IsEmpty()const;
+	bool IsFull()const;
+	void Push(TPriorityQueueElem q);
+	TPriorityQueueElem Pop();
 };
+
+TQueue<TPriorityQueueElem>::TQueue(int size)
+{
+	if (size <= 0)
+		throw M_Exeption("wrong size");
+	this->size = size;
+	this->elems = new TPriorityQueueElem[size];
+	this->count = 0;
+}
+
+TQueue<TPriorityQueueElem>::TQueue(const TQueue<TPriorityQueueElem>& q)
+{
+	size = q.size;
+	count = q.count;
+	this->elems = new TPriorityQueueElem[q.size];
+	if (q.IsEmpty())
+		return;
+	for (int i = 0; i < q.count; i++)
+		elems[i] = q.elems[i];
+}
+
+TQueue<TPriorityQueueElem>::~TQueue()
+{
+	delete[] elems;
+}
+
+bool TQueue<TPriorityQueueElem>::IsEmpty()const
+{
+	return(count == 0);
+}
+
+bool TQueue<TPriorityQueueElem>::IsFull()const
+{
+	return(count == size);
+}
+
+void TQueue<TPriorityQueueElem>::Push(TPriorityQueueElem q)
+{
+	if (IsFull())
+		throw M_Exeption("queue is full");
+	if (IsEmpty())
+	{
+		elems[count] = q;
+		count++;
+		return;
+	}
+	int mid = 0;
+	int i1 = 0;
+	int i2 = count - 1;
+	while (i1 <= i2)
+	{
+		mid = (i1 + i2) / 2;
+		if (elems[mid] == q)
+			i1 = i2 + 1;
+		else if (elems[mid] < q)
+			i1 = mid + 1;
+		else 
+			i2 = mid - 1;
+	}
+
+	for (int j = count; j > i1; j--)
+		elems[j] = elems[j - 1];
+	elems[i1] = q;
+	count++;
+}
+
+TPriorityQueueElem TQueue<TPriorityQueueElem>::Pop()
+{
+	if (IsEmpty())
+		throw M_Exeption("queue is empty");
+	TPriorityQueueElem p = elems[count - 1];
+	count--;
+	return p;
+}
+
+
+
+
