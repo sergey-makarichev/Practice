@@ -1,5 +1,6 @@
 #ifndef POLINOM_H    
 #define POLINOM_H
+
 #include "TMonom.h"
 #include <string>
 #include <iostream>
@@ -375,25 +376,23 @@ Polinom Polinom::operator-() const
 
 bool Polinom::operator==(const Polinom& polynom) const
 {
-	TNode<int, float>* first = monoms->pFirst;
+	TNode<int, float>* first = monoms->pFirst;////
 	TNode<int, float>* second = polynom.monoms->pFirst;
 	while (first != nullptr && second != nullptr && (*first == *second))
 	{
 		first = first->pNext;
 		second = second->pNext;
 	}
-	if (first == nullptr && second == nullptr)
+	if (first == nullptr && second == nullptr)///
 		return true;
-	else
-		return false;
+	return false;
 }
 
 const Polinom& Polinom::operator=(const Polinom& polynom)
 {
 	if (*this == polynom) 
 		return *this;
-	if (!monoms->IsEmpty())
-		delete monoms;
+	delete monoms;
 	monoms = new TList<int, float>(*polynom.monoms);
 	return *this;
 }
@@ -403,7 +402,7 @@ Polinom Polinom::operator+(const TNode<int, float>& monom)
 	Polinom res;
 	bool FlagOfAddMonom = false;
 	monoms->Reset();
-	while (!monoms->IsEnded())
+	while (!monoms->IsEnded()) //////сначала ищем позицию, куда вставлять, потом делаем вставку
 	{
 		TNode<int, float> CurrentMon(monoms->GetCurrent()->key, monoms->GetCurrent()->pData);
 		if (CurrentMon > monom)
@@ -442,7 +441,7 @@ Polinom Polinom::operator-(const TNode<int, float>& monom)
 Polinom Polinom::operator*(const Polinom& polynom)const
 {
 	if (polynom.monoms->IsEmpty())
-		return *this;
+		return *this; ///
 	Polinom product;
 	Polinom pol(polynom);
 	pol.monoms->Reset();
@@ -450,7 +449,7 @@ Polinom Polinom::operator*(const Polinom& polynom)const
 	{
 		TNode<int, float> tmp1(pol.monoms->GetCurrent()->key, pol.monoms->GetCurrent()->pData);
 		Polinom tmp2(Polinom(*this) * tmp1);
-		product = product + tmp2;
+		product = product + tmp2; //product = product + copy * tmp1
 
 		pol.monoms->Next();
 	}
@@ -472,7 +471,6 @@ Polinom Polinom::operator*(const TNode<int, float>& monom)const
 			res = res + tmp;
 		pol.monoms->Next();
 	}
-	cout << endl;
 	return res;
 }
 

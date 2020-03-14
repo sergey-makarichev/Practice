@@ -1,15 +1,16 @@
 #ifndef TMONOM_H
 #define TMONOM_H
+
 #include "TNode.h"
 #include "Exception.h"
 
 template<>
-class TNode<int, float>
+class TNode<unsigned int, float> //unsigned
 {
 public:
 	unsigned int key;
 	float pData;
-	TNode<int, float>* pNext;
+	TNode<unsigned int, float>* pNext; //unsigned
 	TNode() : key(0), pData(0), pNext(nullptr)
 	{
 	}
@@ -24,9 +25,9 @@ public:
 	{
 		pNext = nullptr;
 	}
-	TNode<int, float> operator*(const TNode<int, float>&);
-	TNode<int, float> operator+(const TNode<int, float>&);
-	TNode<int, float> operator-(const TNode<int, float>&);
+	TNode<unsigned int, float> operator*(const TNode<unsigned int, float>&);
+	TNode<unsigned int, float> operator+(const TNode<unsigned int, float>&);
+	TNode<unsigned int, float> operator-(const TNode<unsigned int, float>&);
 	TNode<int, float>* operator-()const;
 	bool operator <(const TNode<int, float>&)const;
 	bool operator >(const TNode<int, float>&)const;
@@ -108,4 +109,5 @@ TNode<int, float>* TNode<int, float>::operator-() const
 	tmp->pData = -1 * tmp->pData;
 	return tmp;
 }
+
 #endif 

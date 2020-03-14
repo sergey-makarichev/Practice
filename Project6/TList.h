@@ -1,5 +1,6 @@
 #ifndef TLIST_H    
-#define TLIST_H 
+#define TLIST_H
+
 #include<iostream>
 #include "TNode.h"
 #include"Exception.h"
@@ -380,4 +381,5 @@ TNode<TKey, TData>* TList<TKey, TData> ::GetPrev()const
 {
 	return  pPrevious;
 }
+
 #endif 

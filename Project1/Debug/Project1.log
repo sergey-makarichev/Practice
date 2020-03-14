@@ -1,1 +1,6 @@
-﻿C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Microsoft\VC\v160\Microsoft.Cpp.WindowsSDK.targets(46,5): error MSB8036: The Windows SDK version 10.0.17763.0 was not found. Install the required version of Windows SDK or change the SDK version in the project property pages or by right-clicking the solution and selecting "Retarget solution".
+﻿  main.cpp
+c:\users\makarychev.s\desktop\новая папка (2)\practice\project1\main.cpp(39): warning C4244: аргумент: преобразование "int" в "float", возможна потеря данных
+c:\users\makarychev.s\desktop\новая папка (2)\practice\project1\main.cpp(44): warning C4244: аргумент: преобразование "int" в "float", возможна потеря данных
+  Vector.cpp
+  Создание кода...
+  Project1.vcxproj -> C:\Users\makarychev.s\Desktop\Новая папка (2)\Practice\Debug\Project1.exe

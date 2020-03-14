@@ -44,4 +44,5 @@ TNode<TKey, TData>::~TNode()
 {
 	pNext = nullptr;
 }
+
 #endif 
